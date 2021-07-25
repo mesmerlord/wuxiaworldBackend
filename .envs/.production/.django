@@ -1,0 +1,45 @@
+# General
+# ------------------------------------------------------------------------------
+# DJANGO_READ_DOT_ENV_FILE=True
+DJANGO_SETTINGS_MODULE=config.settings.production
+DJANGO_SECRET_KEY=M1ThfOuK4p3eLE2GBk9sIJbYlTocahoUrXiu5cIODD4xdfoZ0dNcAtAsmsFC9bxq
+DJANGO_ADMIN_URL=admin/
+DJANGO_ALLOWED_HOSTS=.wuxianovels.co
+
+# Security
+# ------------------------------------------------------------------------------
+# TIP: better off using DNS, however, redirect is OK too
+DJANGO_SECURE_SSL_REDIRECT=False
+
+# Email
+# ------------------------------------------------------------------------------
+DJANGO_SERVER_EMAIL=
+
+MAILGUN_API_KEY=
+MAILGUN_DOMAIN=
+
+
+# django-allauth
+# ------------------------------------------------------------------------------
+DJANGO_ACCOUNT_ALLOW_REGISTRATION=True
+
+# Gunicorn
+# ------------------------------------------------------------------------------
+WEB_CONCURRENCY=4
+
+# Sentry
+# ------------------------------------------------------------------------------
+SENTRY_DSN=
+
+
+# Redis
+# ------------------------------------------------------------------------------
+REDIS_URL=redis://redis:6379/0
+
+# Celery
+# ------------------------------------------------------------------------------
+
+# Flower
+CELERY_FLOWER_USER=PGyIvsxLdTCJaWmHTszUcoYierlMoaGF
+CELERY_FLOWER_PASSWORD=RLShpTe8pPP74bGI0zuvPtAvIz6JjIQRwWgoBKHNaouVQZ5q5kaB5KwWKLxh4jvl
+

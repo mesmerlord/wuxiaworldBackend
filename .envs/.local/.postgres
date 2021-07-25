@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=wuxiaworld
+POSTGRES_USER=tTSiHqvaIHcarECTjSrmsFrCwGyUQxSv
+POSTGRES_PASSWORD=lWd2gb7UEORYopHmii2NTNykkUNk4qOYZR1a48xFnrdABFu1BrqgBWs0JD0xlKVh
