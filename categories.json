@@ -1,0 +1,175 @@
+[{
+        "id": 1,
+        "name": "Action",
+        "catSlug": "action"
+    },
+    {
+        "id": 2,
+        "name": "Adventure",
+        "catSlug": "adventure"
+    },
+    {
+        "id": 3,
+        "name": "Drama",
+        "catSlug": "drama"
+    },
+    {
+        "id": 4,
+        "name": "Fantasy",
+        "catSlug": "fantasy"
+    },
+    {
+        "id": 5,
+        "name": "Harem",
+        "catSlug": "harem"
+    },
+    {
+        "id": 6,
+        "name": "Martial Arts",
+        "catSlug": "martial-arts"
+    },
+    {
+        "id": 7,
+        "name": "Xuanhuan",
+        "catSlug": "xuanhuan"
+    },
+    {
+        "id": 8,
+        "name": "Mystery",
+        "catSlug": "mystery"
+    },
+    {
+        "id": 9,
+        "name": "Mature",
+        "catSlug": "mature"
+    },
+    {
+        "id": 10,
+        "name": "Comedy",
+        "catSlug": "comedy"
+    },
+    {
+        "id": 11,
+        "name": "Josei",
+        "catSlug": "josei"
+    },
+    {
+        "id": 12,
+        "name": "Romance",
+        "catSlug": "romance"
+    },
+    {
+        "id": 13,
+        "name": "Seinen",
+        "catSlug": "seinen"
+    },
+    {
+        "id": 14,
+        "name": "Shounen",
+        "catSlug": "shounen"
+    },
+    {
+        "id": 15,
+        "name": "Xianxia",
+        "catSlug": "xianxia"
+    },
+    {
+        "id": 16,
+        "name": "Shoujo",
+        "catSlug": "shoujo"
+    },
+    {
+        "id": 17,
+        "name": "Supernatural",
+        "catSlug": "supernatural"
+    },
+    {
+        "id": 18,
+        "name": "Ecchi",
+        "catSlug": "ecchi"
+    },
+    {
+        "id": 19,
+        "name": "School Life",
+        "catSlug": "school-life"
+    },
+    {
+        "id": 20,
+        "name": "Tragedy",
+        "catSlug": "tragedy"
+    },
+    {
+        "id": 21,
+        "name": "Sci-fi",
+        "catSlug": "sci-fi"
+    },
+    {
+        "id": 22,
+        "name": "Horror",
+        "catSlug": "horror"
+    },
+    {
+        "id": 23,
+        "name": "Adult",
+        "catSlug": "adult"
+    },
+    {
+        "id": 24,
+        "name": "Psychological",
+        "catSlug": "psychological"
+    },
+    {
+        "id": 25,
+        "name": "Wuxia",
+        "catSlug": "wuxia"
+    },
+    {
+        "id": 26,
+        "name": "Mecha",
+        "catSlug": "mecha"
+    },
+    {
+        "id": 27,
+        "name": "Slice of Life",
+        "catSlug": "slice-of-life"
+    },
+    {
+        "id": 28,
+        "name": "Historical",
+        "catSlug": "historical"
+    },
+    {
+        "id": 29,
+        "name": "Gender Bender",
+        "catSlug": "gender-bender"
+    },
+    {
+        "id": 30,
+        "name": "Shounen Ai",
+        "catSlug": "shounen-ai"
+    },
+    {
+        "id": 31,
+        "name": "Smut",
+        "catSlug": "smut"
+    },
+    {
+        "id": 32,
+        "name": "Yaoi",
+        "catSlug": "yaoi"
+    },
+    {
+        "id": 33,
+        "name": "Yuri",
+        "catSlug": "yuri"
+    },
+    {
+        "id": 34,
+        "name": "Sports",
+        "catSlug": "sports"
+    },
+    {
+        "id": 35,
+        "name": "Shoujo Ai",
+        "catSlug": "shoujo-ai"
+    }]
