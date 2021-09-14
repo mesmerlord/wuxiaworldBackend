@@ -172,11 +172,14 @@ def reset_yearly_views():
 @shared_task
 def new_novel(aDict,categoriesToPut,tagsToPut):
     Novel = apps.get_model('novels', 'Novel')
-    novel, _ = Novel.objects.get_or_create(slug = aDict['slug'],
-                            defaults = aDict)
-    novel.category.set(categoriesToPut)
-    novel.tag.set(tagsToPut)
-    novel.save()
+    try:
+        novel, _ = Novel.objects.get_or_create(slug = aDict['slug'],
+                                defaults = aDict)
+        novel.category.set(categoriesToPut)
+        novel.tag.set(tagsToPut)
+        novel.save()
+    except Exception:
+        pass
 
 @shared_task
 def add_novels():
