@@ -188,32 +188,30 @@ def add_novels():
     Category = apps.get_model('novels', 'Category')
     Author = apps.get_model('novels', 'Author')
     for _ , x in df.iterrows():
-        try:
-
-            tags = x['Book Tags'].split(",")
-            tagsToPut = []
-            for tag in tags:
-                gotTag, _ = Tag.objects.get_or_create(name = tag)
-                tagsToPut.append(gotTag)
-
-            categories = x['Book Genre'].split(":")
-            categoriesToPut = []  
-            for category in categories:
-                gotCategory, _ = Category.objects.get_or_create(name = category)
-                categoriesToPut.append(gotCategory)
-            try:
-                author, _ = Author.objects.get_or_create(slug = slugify(x['Book Author']),
-                                                        defaults = {'name' : x['Book Author']})
-            except Exception as e:
-                print(f"Book {x['Book Name']} , author {x['Book Author']} already exists")
-            novelCheck  = Novel.objects.filter(slug = slugify(x['Book Name']))
         
-            if not novelCheck :
-                newDict = {'slug': slugify(x['Book Name']), 'name' : x['Book Name'], 'image' : x['Book Image'], 'imageThumb' : x['thumbnail'],
-                            'linkNU' : x['Book URL'], 'author' : author.id, 'description' : x['Description'], 'numOfChaps' : int(x['Book Chapters'].strip().split(" ")[0]),
-                            'numOfTranslatedChaps' : 0, 'novelStatus' : False , 'scrapeLink' : x['novelLink'], 'repeatScrape' : True}
-                new_novel.delay(newDict, categoriesToPut, tagsToPut)
-        except:
-            continue
+        tags = x['Book Tags'].split(",")
+        tagsToPut = []
+        for tag in tags:
+            gotTag, _ = Tag.objects.get_or_create(name = tag)
+            tagsToPut.append(gotTag)
+
+        categories = x['Book Genre'].split(":")
+        categoriesToPut = []  
+        for category in categories:
+            gotCategory, _ = Category.objects.get_or_create(name = category)
+            categoriesToPut.append(gotCategory)
+        try:
+            author, _ = Author.objects.get_or_create(slug = slugify(x['Book Author']),
+                                                    defaults = {'name' : x['Book Author']})
+        except Exception as e:
+            print(f"Book {x['Book Name']} , author {x['Book Author']} already exists")
+        novelCheck  = Novel.objects.filter(slug = slugify(x['Book Name']))
+    
+        if not novelCheck :
+            newDict = {'slug': slugify(x['Book Name']), 'name' : x['Book Name'], 'image' : x['Book Image'], 'imageThumb' : x['thumbnail'],
+                        'linkNU' : x['Book URL'], 'author' : author.id, 'description' : x['Description'], 'numOfChaps' : int(x['Book Chapters'].strip().split(" ")[0]),
+                        'numOfTranslatedChaps' : 0, 'novelStatus' : False , 'scrapeLink' : x['novelLink'], 'repeatScrape' : True}
+            new_novel.delay(newDict, categoriesToPut, tagsToPut)
+    
             
 
