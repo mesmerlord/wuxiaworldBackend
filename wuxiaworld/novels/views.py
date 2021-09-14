@@ -1,20 +1,21 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Novel, Author, Category, Chapter
+from .models import Novel, Author, Category, Chapter, NovelViews
 from .serializers import (NovelSerializer, CategorySerializer,
                         AuthorSerializer,ChaptersSerializer,ChapterSerializer,NovelInfoSerializer,
                         SearchSerializer)
 from rest_framework import viewsets
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
-from .tasks import addCat, addNovel, addChaps
+# from .tasks import addCat, addNovel, addChaps
 from django.http import HttpResponse
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
 from django.http import Http404
 from rest_framework import filters
 from rest_framework import pagination
+from .tasks import initial_scrape, continous_scrape, add_novels
 
-class SearchPagination(pagination.PageNumberPagination):       
-    page_size = 5
+class SearchPagination(pagination.LimitOffsetPagination):       
+    page_size = 6
 
 class ReadOnly(BasePermission):
     def has_permission(self, request, view):
@@ -25,31 +26,21 @@ class CategorySerializerView(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     def retrieve(self, request, pk = None):
-        try:
-            pageReq = self.request.query_params.get('page')
-            category = get_object_or_404(Category,id = pk)
-            queryset = Novel.objects.filter(category = pk)
-            if pageReq:
-                items = int(pageReq)*10
-                if items>10:
-                    queryset = queryset[items-10:items]
-                elif items==10:
-                    queryset = queryset[:items]
-                else:
-                    raise Http404
-                
-            else:
-                queryset = queryset[:10]
-            if len(queryset)>0:
-                serializer = NovelInfoSerializer(queryset, many = True)
-                catSerial = CategorySerializer(category)
-                finaldata = {'category':catSerial.data,'results':serializer.data}
-                return Response(finaldata)
-            else:
-                raise Http404
-        except Exception as e:
-            print(e)
+        
+        pageReq = self.request.query_params.get('page')
+        category = get_object_or_404(Category,slug = pk)
+        queryset = Novel.objects.filter(category = category)
+            
+        if len(queryset)>0:
+            page = self.paginate_queryset(queryset)
+            serializer = NovelInfoSerializer(page, many=True)
+
+            finaldata = {'category':category.name,'results':serializer.data,
+                            }
+            return Response(finaldata)
+        else:
             raise Http404
+        
     
 
 class AuthorSerializerView(viewsets.ModelViewSet):
@@ -60,14 +51,13 @@ class AuthorSerializerView(viewsets.ModelViewSet):
 class SingleChapterSerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
     queryset = Chapter.objects.all()
-    serializer = ChapterSerializer(queryset)
-    
+
     def retrieve(self, request, pk = None):
         object = get_object_or_404(self.queryset,novSlugChapSlug = pk)
         novParent = object.novelParent
-        novParent.views = novParent.views+1
+        novelViewParent = NovelViews.objects.get(viewsNovelName = novParent.slug)
+        novelViewParent.updateViews()
         
-        novParent.save()
         serializer = ChapterSerializer(object)
         return Response(serializer.data)
     def list(self, request):
@@ -103,8 +93,8 @@ class NovelSerializerView(viewsets.ModelViewSet):
     
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
-        obj.views = obj.views + 1
-        obj.save(update_fields=("views",))
+        novelViews = NovelViews.objects.get(viewsNovelName = obj.slug)
+        novelViews.updateViews()
         return super().retrieve(request, *args, **kwargs)
     def list(self, request,*args, **kwargs):
         
@@ -126,14 +116,22 @@ class SearchSerializerView(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
 
 def catUpload(request):
-    addCat.delay()
+    # addCat.delay()
     return HttpResponse("<li>Done</li>")
 
 def novelUpload(request):
-    addNovel.delay()
+    # addNovel.delay()
     return HttpResponse("<li>Done</li>")
 
 def chapUpload(request):
-    
-    addChaps.delay()
+    # initial_scrape.delay("https://wuxiaworld.site/novel/puppeteer-i-use-human-puppets-to-create-perfect-accidents/")
+    # addChaps.delay()
+    # continous_scrape.delay("https://wuxiaworld.site/novel/losing-money-to-be-a-tycoon-webnovel-freeread-mtl/")
+    # object = Novel.objects.get(slug = "ill-add-points-to-all-things-webnovel")
+    # object.delete()
+    # initial_scrape.delay("https://wuxiaworld.site/novel/nano-machine-webnovel-free/")
+    # object1 = Novel.objects.all()
+    # object1.update(slug = "hello")
+    # print(object1.values())
+    add_novels.delay()
     return HttpResponse("<li>Done</li>")

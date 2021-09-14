@@ -11,6 +11,8 @@ flower==0.9.7  # https://github.com/mher/flower
 uvicorn[standard]==0.14.0  # https://github.com/encode/uvicorn
 bs4
 pandas
+cloudscraper
+lxml
 # Django
 # ------------------------------------------------------------------------------
 django==3.1.12  # pyup: < 3.2  # https://www.djangoproject.com/
