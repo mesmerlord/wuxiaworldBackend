@@ -209,7 +209,7 @@ def add_novels():
     
         if not novelCheck :
             newDict = {'slug': slugify(x['Book Name']), 'name' : x['Book Name'], 'image' : x['Book Image'], 'imageThumb' : x['thumbnail'],
-                        'linkNU' : x['Book URL'], 'author' : author.id, 'description' : x['Description'], 'numOfChaps' : int(x['Book Chapters'].strip().split(" ")[0]),
+                        'linkNU' : x['Book URL'], 'author' : author.slug, 'description' : x['Description'], 'numOfChaps' : int(x['Book Chapters'].strip().split(" ")[0]),
                         'numOfTranslatedChaps' : 0, 'novelStatus' : False , 'scrapeLink' : x['novelLink'], 'repeatScrape' : True}
             new_novel.delay(newDict, categoriesToPut, tagsToPut)
     
