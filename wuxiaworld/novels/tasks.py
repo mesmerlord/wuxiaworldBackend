@@ -169,12 +169,7 @@ def reset_yearly_views():
     novels = NovelViews.objects.all()
     novels.update(yearlyViews = 0)
 
-@shared_task
-def new_novel(aDict,categoriesToPut,tagsToPut):
-    Novel = apps.get_model('novels', 'Novel')
-    
-    
-    
+ 
 
 @shared_task
 def add_novels():
