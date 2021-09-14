@@ -17,7 +17,8 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = ["wuxianovels.co",'wuxiaworld.eu','piratenovel.com',
                 "https://wuxianovels.co",'https://wuxiaworld.eu','https://piratenovel.com',
-                "www.wuxianovels.co",'www.wuxiaworld.eu','www.piratenovel.com']
+                "www.wuxianovels.co",'www.wuxiaworld.eu','www.piratenovel.com',
+                "https://www.wuxianovels.co",'https://www.wuxiaworld.eu','https://www.piratenovel.com',]
 
 # DATABASES
 # ------------------------------------------------------------------------------
