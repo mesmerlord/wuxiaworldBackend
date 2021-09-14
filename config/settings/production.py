@@ -15,7 +15,7 @@ from .base import env
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["wuxianovels.co",'wuxiaworld.co','piratenovel.com']
+ALLOWED_HOSTS = ["wuxianovels.co",'wuxiaworld.eu','piratenovel.com']
 
 # DATABASES
 # ------------------------------------------------------------------------------
