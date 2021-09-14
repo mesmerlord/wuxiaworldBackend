@@ -207,7 +207,7 @@ def add_novels():
     df = pd.read_csv('actual.csv').astype(str)
     df.applymap(lambda x: "" if len(x)>199 else x)
     for _ , x in df.iterrows():
-        new_novel.delay(x)
+        new_novel.delay(x.to_dict())
         
         
     
