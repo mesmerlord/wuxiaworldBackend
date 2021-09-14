@@ -170,6 +170,15 @@ def reset_yearly_views():
     novels.update(yearlyViews = 0)
 
 @shared_task
+def add_novel(aDict,categoriesToPut,tagsToPut):
+    Novel = apps.get_model('novels', 'Novel')
+    novel, _ = Novel.objects.get_or_create(slug = aDict['slug'],
+                            defaults = aDict)
+    novel.category.set(categoriesToPut)
+    novel.tag.set(tagsToPut)
+    novel.save()
+    
+@shared_task
 def add_novels():
     df = pd.read_csv('actual.csv')
     
@@ -198,12 +207,10 @@ def add_novels():
         novelCheck  = Novel.objects.filter(slug = slugify(x['Book Name']))
        
         if not novelCheck :
-            novel, _ = Novel.objects.get_or_create(slug = slugify(x['Book Name']),
-                            defaults = {'name' : x['Book Name'], 'image' : x['Book Image'], 'imageThumb' : x['thumbnail'],
+            newDict = {'slug': slugify(x['Book Name']), 'name' : x['Book Name'], 'image' : x['Book Image'], 'imageThumb' : x['thumbnail'],
                         'linkNU' : x['Book URL'], 'author' : author, 'description' : x['Description'], 'numOfChaps' : int(x['Book Chapters'].strip().split(" ")[0]),
-                        'numOfTranslatedChaps' : 0, 'novelStatus' : False , 'scrapeLink' : x['novelLink'], 'repeatScrape' : True})
+                        'numOfTranslatedChaps' : 0, 'novelStatus' : False , 'scrapeLink' : x['novelLink'], 'repeatScrape' : True}
+            add_novel.delay(newDict, categoriesToPut, tagsToPut)
         
-            novel.category.set(categoriesToPut)
-            novel.tag.set(tagsToPut)
-            novel.save()
+            
 
