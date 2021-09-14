@@ -116,7 +116,7 @@ def initial_scrape(link):
     currentNovel = Novel.objects.get(scrapeLink = link)
     currentNovel.novelRef = allScrape['id']
     currentNovel.save()
-    for y,x in enumerate(chapters[::-1][:3]):
+    for y,x in enumerate(chapters[::-1]):
 
         chap = x.find("a")
         chapTitle = chap.get_text().strip()
@@ -143,7 +143,7 @@ def continous_scrape(scrapeLink):
             break
         chapsToScrape.append(x)
    
-    for chap in chapsToScrape[::-1][:3]:
+    for chap in chapsToScrape[::-1]:
         index += 1
         chap_obj = chap.find("a")
         chapTitle = chap_obj.get_text().strip()
