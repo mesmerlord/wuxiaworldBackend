@@ -173,11 +173,7 @@ def reset_yearly_views():
 def new_novel(aDict,categoriesToPut,tagsToPut):
     Novel = apps.get_model('novels', 'Novel')
     
-    novel, _ = Novel.objects.get_or_create(slug = aDict['slug'],
-                            defaults = aDict)
-    novel.category.set(categoriesToPut)
-    novel.tag.set(tagsToPut)
-    novel.save()
+    
     
 
 @shared_task
@@ -205,13 +201,14 @@ def add_novels():
                                                     defaults = {'name' : x['Book Author']})
         except Exception as e:
             print(f"Book {x['Book Name']} , author {x['Book Author']} already exists")
-        novelCheck  = Novel.objects.filter(slug = slugify(x['Book Name']))
-    
-        if not novelCheck :
-            newDict = {'slug': slugify(x['Book Name']), 'name' : x['Book Name'], 'image' : x['Book Image'], 'imageThumb' : x['thumbnail'],
-                        'linkNU' : x['Book URL'], 'author' : author.slug, 'description' : x['Description'], 'numOfChaps' : int(x['Book Chapters'].strip().split(" ")[0]),
-                        'numOfTranslatedChaps' : 0, 'novelStatus' : False , 'scrapeLink' : x['novelLink'], 'repeatScrape' : True}
-            new_novel.delay(newDict, categoriesToPut, tagsToPut)
+        
+        novel, _ = Novel.objects.get_or_create(slug = slugify(x['Book Author']),
+                    defaults = {'slug': slugify(x['Book Name']), 'name' : x['Book Name'], 'image' : x['Book Image'], 'imageThumb' : x['thumbnail'],
+                    'linkNU' : x['Book URL'], 'author' : author.slug, 'description' : x['Description'], 'numOfChaps' : int(x['Book Chapters'].strip().split(" ")[0]),
+                    'numOfTranslatedChaps' : 0, 'novelStatus' : False , 'scrapeLink' : x['novelLink'], 'repeatScrape' : True})
+        novel.category.set(categoriesToPut)
+        novel.tag.set(tagsToPut)
+        novel.save()
     
             
 
