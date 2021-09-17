@@ -149,10 +149,11 @@ def continous_scrape(scrapeLink):
         chapsToScrape.append(x)
    
     for chap in chapsToScrape[::-1]:
-        index += 1
         chap_obj = chap.find("a")
         chapTitle = chap_obj.get_text().strip()
         scrape_chapter.delay(scrapeLink,chap_obj.attrs['href'],chapTitle,index)
+        index += 1
+
         
 
 #Reset Views
