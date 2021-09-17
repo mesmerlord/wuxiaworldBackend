@@ -60,6 +60,10 @@ def scrape_chapter(novelLink,link,chapTitle, chapIndex):
     for chapLine in chapLines: 
         allChaps.append(chapLine.get_text())
     allChapJoin = "\n".join(allChaps)
+    chapter_check = Chapter.objects.filter(index = chapIndex + 1, title = chapTitle)
+    if chapter_check:
+        raise Exception(f"Novel {novel.name} : {chapTitle} with index {chapIndex + 1} already in DB")
+    
     chapter = Chapter.objects.create(index = chapIndex+1,text= allChapJoin,title = chapTitle,
                     novelParent = novel,scrapeLink = link)
 def getNovelPage(link):
