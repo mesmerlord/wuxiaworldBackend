@@ -49,6 +49,5 @@ def init_scrape(sender,instance,**kwargs):
                     name=f'{instance.name} - Continious',
                     task='wuxiaworld.novels.tasks.continous_scrape',
                     args = json.dumps([instance.scrapeLink,]),
-                    expires=datetime.utcnow() + timedelta(minutes=30)
                     )
 

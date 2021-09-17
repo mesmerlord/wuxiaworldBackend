@@ -1,7 +1,7 @@
 from celery import shared_task
 # from .models import Category, Author, Novel, Chapter,NovelViews
 from django.apps import apps
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import requests 
 from bs4 import BeautifulSoup
 import pandas as pd

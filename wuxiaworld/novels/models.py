@@ -5,7 +5,6 @@ from django.utils.timezone import now
 from .signals import *
 from django.db.models import F
 
-
 class Author(models.Model):
     name = models.CharField(max_length = 200)
     slug = models.SlugField(max_length = 200, primary_key=True)
