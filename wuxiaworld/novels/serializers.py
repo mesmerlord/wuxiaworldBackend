@@ -54,7 +54,7 @@ class ChaptersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chapter
-        fields = ('index','title',"novSlugChapSlug",'timeAdded', 'scrapeLink')
+        fields = ('index','title',"novSlugChapSlug",'timeAdded')
     def get_time(self,obj):
         chapAddedTime = obj.dateAdded
         dayAgo = now() + timedelta(hours = -24)
@@ -77,7 +77,7 @@ class NovelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Novel
         # fields = ('category','name', 'image','slug','author','description','views_set',)
-        exclude = ('viewsNovelName','tag')
+        exclude = ('viewsNovelName','tag', 'scrapeLink')
         # fields = '__all__'
     
 
