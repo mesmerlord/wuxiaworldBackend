@@ -216,7 +216,7 @@ def delete_dupes():
     Novel = apps.get_model('novels', 'Novel')
     Chapter = apps.get_model('novels','Chapter')
     today = date.today()
-    novelQuery = Novel.objects.filter(slug = "losing-money-to-be-a-tycoon")
+    novelQuery = Novel.objects.all()
 
     for novel in novelQuery:
         chapters = Chapter.objects.filter(novelParent = novel, dateAdded__gt = today).order_by("-dateAdded")
@@ -224,8 +224,6 @@ def delete_dupes():
             check_dupe = Chapter.objects.filter(novelParent = novel, title = chap.title)
             if check_dupe.count()>1:
                 chap.delete()
-        raise Exception(f"Novel {novel.name} , duplicates cleared")
-        break
 
             
 
