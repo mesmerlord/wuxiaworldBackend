@@ -1,3 +1,4 @@
 ** Add a check if all the previous scraped chap names and index are the same
     - If not add a Sentry Log
-**
+** Add an expiry time to all celery tasks so no raceconditions happen
+** Create Token auth for backend

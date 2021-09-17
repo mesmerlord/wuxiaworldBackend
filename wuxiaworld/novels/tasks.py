@@ -1,7 +1,7 @@
 from celery import shared_task
 # from .models import Category, Author, Novel, Chapter,NovelViews
 from django.apps import apps
-from datetime import datetime
+from datetime import datetime, date
 import requests 
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -12,6 +12,7 @@ from celery.task import periodic_task
 from celery.schedules import crontab
 import cloudscraper
 import random
+
 
 headers = {
     'authority': 'wuxiaworld.site',
@@ -210,6 +211,21 @@ def add_novels():
         new_novel.delay(x.to_dict())
         
         
-    
+@shared_task
+def delete_dupes():
+    Novel = apps.get_model('novels', 'Novel')
+    Chapter = apps.get_model('novels','Chapter')
+    today = date.today()
+    novelQuery = Novel.objects.filter(slug = "losing-money-to-be-a-tycoon")
+
+    for novel in novelQuery:
+        chapters = Chapter.objects.filter(novelParent = novel, dateAdded__gt = today).order_by("-dateAdded")
+        for chap in chapters:
+            check_dupe = Chapter.objects.filter(novelParent = novel, title = chap.title)
+            if check_dupe.count()>1:
+                chap.delete()
+        raise Exception(f"Novel {novel.name} , duplicates cleared")
+        break
+
             
 

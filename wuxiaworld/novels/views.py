@@ -12,7 +12,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from django.http import Http404
 from rest_framework import filters
 from rest_framework import pagination
-from .tasks import initial_scrape, continous_scrape, add_novels
+from .tasks import initial_scrape, continous_scrape, add_novels,delete_dupes
 
 class SearchPagination(pagination.LimitOffsetPagination):       
     page_size = 6
@@ -133,5 +133,6 @@ def chapUpload(request):
     # object1 = Novel.objects.all()
     # object1.update(slug = "hello")
     # print(object1.values())
-    add_novels.delay()
+    # add_novels.delay()
+    delete_dupes.delay()
     return HttpResponse("<li>Done</li>")

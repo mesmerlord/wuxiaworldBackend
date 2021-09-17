@@ -6,6 +6,7 @@ from .tasks import initial_scrape
 from django_celery_beat.models import CrontabSchedule, PeriodicTask
 import pytz
 import json
+from datetime import datetime,timedelta
 
 @receiver(post_delete, sender="novels.Novel")
 def clear_views(sender,instance, **kwargs):
@@ -47,6 +48,7 @@ def init_scrape(sender,instance,**kwargs):
                 task, _ = PeriodicTask.objects.get_or_create(crontab=schedule,
                     name=f'{instance.name} - Continious',
                     task='wuxiaworld.novels.tasks.continous_scrape',
-                    args = json.dumps([instance.scrapeLink,])
+                    args = json.dumps([instance.scrapeLink,]),
+                    expires=datetime.utcnow() + timedelta(minutes=30)
                     )
 
