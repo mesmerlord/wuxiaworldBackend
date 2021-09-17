@@ -222,7 +222,8 @@ def delete_dupes():
     Chapter = apps.get_model('novels','Chapter')
     today = date.today()
     novelQuery = Novel.objects.all()
-
+    todayChaps = Chapter.objects.filter(dateAdded__gt = today).order_by("-dateAdded")
+    todayChaps.delete()
     for novel in novelQuery:
         chapters = Chapter.objects.filter(novelParent = novel, dateAdded__gt = today).order_by("-dateAdded")
         for chap in chapters:
