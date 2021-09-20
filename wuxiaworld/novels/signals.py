@@ -8,6 +8,30 @@ import pytz
 import json
 from datetime import datetime,timedelta
 
+#If Novel has a scrape link, start the initial scrape of the novel and create
+# a periodic task to scrape every x interval.
+def create_periodic_task(instance):
+    if instance.scrapeLink:
+            initial_scrape.delay(instance.scrapeLink)
+            if instance.repeatScrape:
+                schedule, _ = CrontabSchedule.objects.get_or_create(
+                    minute='47',
+                    hour='*',
+                    day_of_week='*',
+                    day_of_month='*',
+                    month_of_year='*',
+                    timezone=pytz.timezone('Canada/Pacific')
+                    )
+                task, _ = PeriodicTask.objects.get_or_create(crontab=schedule,
+                    name=f'{instance.name} - Continious',
+                    task='wuxiaworld.novels.tasks.continous_scrape',
+                    args = json.dumps([instance.scrapeLink,]),
+                    )
+
+# def create_thumbnail(instance):
+#     if instance.
+
+
 @receiver(post_delete, sender="novels.Novel")
 def clear_views(sender,instance, **kwargs):
     novelView = instance.viewsNovelName
@@ -34,20 +58,4 @@ def novel_check(sender,instance,**kwargs):
 @receiver(post_save,sender = "novels.Novel")
 def init_scrape(sender,instance,**kwargs):
     if kwargs['created']:
-        if instance.scrapeLink:
-            initial_scrape.delay(instance.scrapeLink)
-            if instance.repeatScrape:
-                schedule, _ = CrontabSchedule.objects.get_or_create(
-                    minute='47',
-                    hour='*',
-                    day_of_week='*',
-                    day_of_month='*',
-                    month_of_year='*',
-                    timezone=pytz.timezone('Canada/Pacific')
-                    )
-                task, _ = PeriodicTask.objects.get_or_create(crontab=schedule,
-                    name=f'{instance.name} - Continious',
-                    task='wuxiaworld.novels.tasks.continous_scrape',
-                    args = json.dumps([instance.scrapeLink,]),
-                    )
-
+        create_periodic_task(instance)

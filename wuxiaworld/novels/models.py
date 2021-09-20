@@ -77,7 +77,7 @@ class Novel(models.Model):
 
 
 class Chapter(models.Model):
-    index = models.IntegerField(default = None, blank = True, unique = True)
+    index = models.IntegerField(default = None, blank = True)
     text = models.TextField(max_length=None)
     title = models.TextField(max_length = 200)
     novelParent = models.ForeignKey(Novel, on_delete = models.CASCADE, verbose_name = "chapter")

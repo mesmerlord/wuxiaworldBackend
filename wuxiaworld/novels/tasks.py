@@ -140,7 +140,10 @@ def continous_scrape(scrapeLink):
         return "Finished with error - Failed to get chapter"
     allChapters =  Chapter.objects.filter(novelParent = novelToSearch).order_by("index")
     index = allChapters.count()
-    lastChapLink = allChapters.last().scrapeLink
+    if allChapters:
+        lastChapLink = allChapters.last().scrapeLink
+    else:
+        lastChapLink = ""
     chapsToScrape = []
     for x in chapters:
         chap_obj = x.find("a")
