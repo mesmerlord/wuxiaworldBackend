@@ -81,31 +81,35 @@ def getChapsOld(link, first_run = False):
     NovelViews = apps.get_model('novels', 'NovelViews')
     scraper = cloudscraper.create_scraper()
     
-    if first_run:
-        scrapedNovel = getNovelPage(link)
-        novel_id = scrapedNovel['novelId']
-    else:
-        currentNovel = Novel.objects.get(scrapeLink = link)
-        novel_id_temp = currentNovel.novelRef
-        if not novel_id_temp :
-            scrapedNovel = getNovelPage(link)
-            novel_id = scrapedNovel['novelId']
-            currentNovel.novelRef = novel_id
-            currentNovel.save()
+    novel_id = ""
+    # if first_run:
+    #     scrapedNovel = getNovelPage(link)
+    #     novel_id = scrapedNovel['novelId']
+    # else:
+    #     currentNovel = Novel.objects.get(scrapeLink = link)
+    #     novel_id_temp = currentNovel.novelRef
+    #     if not novel_id_temp :
+    #         scrapedNovel = getNovelPage(link)
+    #         novel_id = scrapedNovel['novelId']
+    #         currentNovel.novelRef = novel_id
+    #         currentNovel.save()
 
-        else:
-            novel_id = novel_id_temp
+    #     else:
+    #         novel_id = novel_id_temp
 
     try:
         
-        data = {
-        'action': 'manga_get_chapters',
-        'manga': f'{novel_id}'
-        }
-        adminLink = "https://wuxiaworld.site/wp-admin/admin-ajax.php"
-        apiResponse = scraper.post(adminLink,headers = headers,data = data)
-        apiSoup = BeautifulSoup(apiResponse.content,'lxml')
-        chapters = apiSoup.find_all('li',class_ = "wp-manga-chapter")
+        # data = {
+        # 'action': 'manga_get_chapters',
+        # 'manga': f'{novel_id}'
+        # }
+        # adminLink = "https://wuxiaworld.site/wp-admin/admin-ajax.php"
+        # apiResponse = scraper.post(adminLink,headers = headers,data = data)
+        # apiSoup = BeautifulSoup(apiResponse.content,'lxml')
+        # chapters = apiSoup.find_all('li',class_ = "wp-manga-chapter")
+        scrapedNovel = getNovelPage(link)
+        chapters = scrapedNovel['soup'].find_all('li',class_ = "wp-manga-chapter")
+
     except:
         chapters = None
         print("error happened")
