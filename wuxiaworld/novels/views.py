@@ -6,20 +6,25 @@ from .serializers import (NovelSerializer, CategorySerializer,
 from rest_framework import viewsets
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
-# from .tasks import addCat, addNovel, addChaps
 from django.http import HttpResponse
 from rest_framework.pagination import LimitOffsetPagination
 from django.http import Http404
 from rest_framework import filters
 from rest_framework import pagination
-from .tasks import initial_scrape, continous_scrape, add_novels,delete_dupes
+from .tasks import initial_scrape, continous_scrape, add_novels
+from .utils import delete_dupes, delete_unordered_chapters
 
 class SearchPagination(pagination.LimitOffsetPagination):       
     page_size = 6
 
 class ReadOnly(BasePermission):
     def has_permission(self, request, view):
-        return request.method in SAFE_METHODS
+        if request.user.is_staff:
+            print(request)
+            return True
+        else:
+            print(request.method in SAFE_METHODS)
+            return request.method in SAFE_METHODS
 
 class CategorySerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
@@ -96,16 +101,16 @@ class NovelSerializerView(viewsets.ModelViewSet):
         novelViews = NovelViews.objects.get(viewsNovelName = obj.slug)
         novelViews.updateViews()
         return super().retrieve(request, *args, **kwargs)
-    def list(self, request,*args, **kwargs):
+    # def list(self, request,*args, **kwargs):
         
-        queryset = Novel.objects.all()
-        page = self.paginate_queryset(queryset)
+    #     queryset = Novel.objects.all()
+    #     page = self.paginate_queryset(queryset)
         
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        serializer = self.get_serializer(queryset, many=True)
-        return self.get_paginated_response(serializer.data)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return self.get_paginated_response(serializer.data)
 
 class SearchSerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
@@ -115,24 +120,14 @@ class SearchSerializerView(viewsets.ModelViewSet):
     search_fields = ['name','slug']
     filter_backends = (filters.SearchFilter,)
 
-def catUpload(request):
-    # addCat.delay()
+def addNovels(request):
+    add_novels.delay()
     return HttpResponse("<li>Done</li>")
 
-def novelUpload(request):
-    # addNovel.delay()
-    return HttpResponse("<li>Done</li>")
-
-def chapUpload(request):
-    # initial_scrape.delay("https://wuxiaworld.site/novel/puppeteer-i-use-human-puppets-to-create-perfect-accidents/")
-    # addChaps.delay()
-    # continous_scrape.delay("https://wuxiaworld.site/novel/losing-money-to-be-a-tycoon-webnovel-freeread-mtl/")
-    # object = Novel.objects.get(slug = "ill-add-points-to-all-things-webnovel")
-    # object.delete()
-    # initial_scrape.delay("https://wuxiaworld.site/novel/nano-machine-webnovel-free/")
-    # object1 = Novel.objects.all()
-    # object1.update(slug = "hello")
-    # print(object1.values())
-    # add_novels.delay()
+def deleteDuplicate(request):
     delete_dupes.delay()
+    return HttpResponse("<li>Done</li>")
+
+def deleteUnordered(request):
+    delete_unordered_chapters.delay()
     return HttpResponse("<li>Done</li>")

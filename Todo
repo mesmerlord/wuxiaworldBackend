@@ -2,3 +2,4 @@
     - If not add a Sentry Log
 ** Add an expiry time to all celery tasks so no raceconditions happen
 ** Create Token auth for backend
+** Change from crontab to schedule for celerybeat

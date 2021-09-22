@@ -6,18 +6,11 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
-from wuxiaworld.novels.views import ( catUpload,
-                novelUpload,chapUpload)
+from wuxiaworld.novels.views import (deleteDuplicate, deleteUnordered, addNovels)
+
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
-    path(
-        "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
-    ),
-    # Django Admin, use {% url 'admin:index' %}
+    # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
     path(settings.ADMIN_URL, admin.site.urls),
-    # User management
-    path("users/", include("wuxiaworld.users.urls", namespace="users")),
-    path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
@@ -30,14 +23,13 @@ urlpatterns += [
     path("api/", include("config.api_router")),
     # DRF auth token
     path("auth-token/", obtain_auth_token),
-    path("upload/category", catUpload),
-    path("upload/novels", novelUpload),
-    path("upload/chapters", chapUpload),
+    path("upload/novels", addNovels),
+    path("utils/deleteDupe", deleteDuplicate),
+    path("utils/deleteUnordered", deleteUnordered),
 ]
 
 if settings.DEBUG:
-    # This allows the error pages to be debugged during development, just visit
-    # these url in browser to see how these error pages look like.
+
     urlpatterns += [
         path(
             "400/",
