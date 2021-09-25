@@ -56,6 +56,14 @@ class NovelViews(models.Model):
                     yearlyViews = F('yearlyViews')+1)
         
 class Novel(models.Model):
+    SOURCE_CHOICES = [
+        ('WuxSite', 'WuxSite'),
+        ('ReadNovelFull', 'Sophomore'),
+        ('NovelFull', 'Junior'),
+        ('WuxiaCo', 'WuxiaCo'),
+        ('VipNovel', 'VipNovel'),
+    ]
+
     name = models.CharField(max_length = 200)
     image = models.URLField(blank = True)
     imageThumb = models.URLField(blank = True)
@@ -70,8 +78,9 @@ class Novel(models.Model):
     novelStatus = models.BooleanField(default = True) #True will be for Ongoing, False for Completed
     viewsNovelName = models.ForeignKey(NovelViews,on_delete= models.CASCADE, blank=True, null=True)
     scrapeLink = models.CharField(max_length = 200,blank = True, default = "")
-    repeatScrape = models.BooleanField(default = True)
+    repeatScrape = models.BooleanField(default = False)
     novelRef = models.CharField(max_length = 50, default = "", blank = True )
+    sources = models.CharField(max_length = 100,choices=SOURCE_CHOICES,default = 'WuxSite')
     def __str__(self):
         return self.name
 

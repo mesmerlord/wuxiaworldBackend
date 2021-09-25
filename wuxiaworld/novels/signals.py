@@ -3,30 +3,17 @@ from django.dispatch import receiver
 from django.apps import apps
 from django.utils.text import slugify
 from .tasks import initial_scrape
-from django_celery_beat.models import CrontabSchedule, PeriodicTask
 import pytz
 import json
 from datetime import datetime,timedelta
+from django_celery_beat.models import IntervalSchedule, PeriodicTask
 
 #If Novel has a scrape link, start the initial scrape of the novel and create
 # a periodic task to scrape every x interval.
 def create_periodic_task(instance):
     if instance.scrapeLink:
             initial_scrape.delay(instance.scrapeLink)
-            if instance.repeatScrape:
-                schedule, _ = CrontabSchedule.objects.get_or_create(
-                    minute='47',
-                    hour='*',
-                    day_of_week='*',
-                    day_of_month='*',
-                    month_of_year='*',
-                    timezone=pytz.timezone('Canada/Pacific')
-                    )
-                task, _ = PeriodicTask.objects.get_or_create(crontab=schedule,
-                    name=f'{instance.name} - Continious',
-                    task='wuxiaworld.novels.tasks.continous_scrape',
-                    args = json.dumps([instance.scrapeLink,]),
-                    )
+                
 
 # def create_thumbnail(instance):
 #     if instance.
@@ -37,6 +24,9 @@ def clear_views(sender,instance, **kwargs):
     novelView = instance.viewsNovelName
     if novelView:
         novelView.delete()
+    novelTask = PeriodicTask.objects.filter(name = instance.name)
+    if novelTask:
+        novelTask.delete()
     
 @receiver(pre_save,sender = "novels.Novel")
 def novel_check(sender,instance,**kwargs):
