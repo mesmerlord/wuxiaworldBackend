@@ -75,12 +75,17 @@ class NovelSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
     category = CategorySerializer(many= True)
     views = serializers.CharField(source = "viewsNovelName.views")    
+    tag = TagSerializer(many= True)
+    chapters = serializers.SerializerMethodField(method_name = "get_chapters")
+
     class Meta:
         model = Novel
         # fields = ('category','name', 'image','slug','author','description','views_set',)
-        exclude = ('viewsNovelName','tag', 'scrapeLink')
+        exclude = ('viewsNovelName', 'scrapeLink','sources','repeatScrape')
         # fields = '__all__'
-    
+    def get_chapters(self,obj):
+        chapter = Chapter.objects.filter(novelParent = obj)
+        return chapter.count()
 
 class NovelInfoSerializer(serializers.ModelSerializer):
     class Meta:

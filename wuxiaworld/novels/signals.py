@@ -46,7 +46,8 @@ def novel_check(sender,instance,**kwargs):
 @receiver(post_save,sender = "novels.Novel")
 def init_scrape(sender,instance,**kwargs):
     if kwargs['created']:
-        create_periodic_task(instance)
+        pass
+        # create_periodic_task(instance)
 
 @receiver(post_save, sender=User)
 def create_profile(sender, instance, created, **kwargs):

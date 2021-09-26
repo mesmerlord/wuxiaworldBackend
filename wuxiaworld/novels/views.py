@@ -1,20 +1,18 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Novel, Author, Category, Chapter, NovelViews, Profile
+from .models import Novel, Author, Category, Chapter, NovelViews, Profile, Tag
 from .serializers import (NovelSerializer, CategorySerializer,
                         AuthorSerializer,ChaptersSerializer,ChapterSerializer,NovelInfoSerializer,
-                        SearchSerializer, ProfileSerializer)
-from rest_framework import viewsets, status
-from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
+                        SearchSerializer, ProfileSerializer,TagSerializer)
+from rest_framework import viewsets, status, filters, pagination
 from rest_framework.response import Response
 from django.http import HttpResponse
 from rest_framework.pagination import LimitOffsetPagination
 from django.http import Http404
-from rest_framework import filters
-from rest_framework import pagination
 from .tasks import initial_scrape, continous_scrape, add_novels
 from .utils import delete_dupes, delete_unordered_chapters
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
+from .permissions import *
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
@@ -22,49 +20,31 @@ class GoogleLogin(SocialLoginView):
 class SearchPagination(pagination.LimitOffsetPagination):       
     page_size = 6
 
-class ReadOnly(BasePermission):
-    def has_permission(self, request, view):
-        if request.user.is_staff:
-            return True
-        else:
-            return request.method in SAFE_METHODS
-            
-class IsSuperUser(BasePermission):
-    def has_permission(self, request, view):
-        return request.user and request.user.is_superuser
-
-class IsOwner(BasePermission):
-    def has_object_permission(self, request, view, obj):
-        if request.user:
-            if request.user.is_superuser:
-                return True
-            else:
-                return obj.owner == request.user
-        else:
-            return False
 
 class CategorySerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     def retrieve(self, request, pk = None):
-        
-        pageReq = self.request.query_params.get('page')
         category = get_object_or_404(Category,slug = pk)
         queryset = Novel.objects.filter(category = category)
-            
-        if len(queryset)>0:
-            page = self.paginate_queryset(queryset)
-            serializer = NovelInfoSerializer(page, many=True)
-
-            finaldata = {'category':category.name,'results':serializer.data,
-                            }
-            return Response(finaldata)
-        else:
-            raise Http404
+        page = self.paginate_queryset(queryset)
+        serializer = NovelSerializer(page, many=True)
+        finaldata = {'category':category.name,'results':serializer.data,'count':queryset.count()}
+        return Response(finaldata)
         
-    
-
+class TagSerializerView(viewsets.ModelViewSet):
+    permission_classes = [ReadOnly]
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    def retrieve(self, request, pk = None):
+        tag = get_object_or_404(Tag,slug = pk)
+        queryset = Novel.objects.filter(tag = tag)
+        page = self.paginate_queryset(queryset)
+        serializer = NovelInfoSerializer(page, many=True)
+        finaldata = {'tag':tag.name,'results':serializer.data}
+        return Response(finaldata)
+        
 class AuthorSerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
     queryset = Author.objects.all()
@@ -79,40 +59,33 @@ class SingleChapterSerializerView(viewsets.ModelViewSet):
         novParent = object.novelParent
         novelViewParent = NovelViews.objects.get(viewsNovelName = novParent.slug)
         novelViewParent.updateViews()
-        
         serializer = ChapterSerializer(object)
         return Response(serializer.data)
+
     def list(self, request):
         raise Http404
  
-
 class ChaptersSerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
     queryset = Chapter.objects.all()
     serializer_class = ChaptersSerializer
 
     def retrieve(self, request, pk=None):
-        
         queryset = Chapter.objects.filter(novelParent = pk).order_by("index")
-        if len(queryset)>0:
-            serializer = ChaptersSerializer(queryset, many = True)
-            return Response(serializer.data)
-        else:
-            raise Http404 
+        serializer = ChaptersSerializer(queryset, many = True)
+        return Response(serializer.data)
+         
     def list(self, request):
         queryset = Chapter.objects.filter(index = 1)
-
         page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        return Response(serializer.data)
+        serializer = self.get_serializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
 class NovelSerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
     queryset = Novel.objects.all()
     serializer_class = NovelSerializer
-    
+
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
         novelViews = NovelViews.objects.get(viewsNovelName = obj.slug)
