@@ -27,7 +27,6 @@ class ReadOnly(BasePermission):
         if request.user.is_staff:
             return True
         else:
-            print(request.method in SAFE_METHODS)
             return request.method in SAFE_METHODS
             
 class IsSuperUser(BasePermission):
