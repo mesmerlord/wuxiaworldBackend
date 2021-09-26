@@ -312,7 +312,7 @@ class Crawler(ABC):
 
     # ------------------------------------------------------------------------- #
 
-    blacklist_patterns = ['WuxiaWorld.site','wuxiaworld.site', 'readnovelfull.com']
+    blacklist_patterns = []
     bad_tags = [
         'noscript', 'script', 'style', 'iframe', 'ins', 'header', 'footer',
         'button', 'input', 'amp-auto-ads', 'pirate', 'figcaption', 'address',
@@ -326,7 +326,7 @@ class Crawler(ABC):
     ]
     p_block_tags = [
         'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-        'main', 'aside', 'article', 'div', 'section',
+        'main', 'aside', 'article', 'div', 'section','strong','em'
     ]
     unchanged_tags = [
         'pre', 'canvas', 'img'
@@ -340,6 +340,9 @@ class Crawler(ABC):
         '"s': "'s",
         '“s': "'s",
         '”s': "'s",
+        'WuxiaWorld.site':'wuxiaworld.eu',
+        'wuxiaworld.site':'wuxiaworld.eu',
+        'readnovelfull.com':'wuxiaworld.eu',
     }
 
     def clean_text(self, text) -> str:
