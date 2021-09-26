@@ -1,9 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Novel, Author, Category, Chapter, NovelViews
+from .models import Novel, Author, Category, Chapter, NovelViews, Profile
 from .serializers import (NovelSerializer, CategorySerializer,
                         AuthorSerializer,ChaptersSerializer,ChapterSerializer,NovelInfoSerializer,
-                        SearchSerializer)
-from rest_framework import viewsets
+                        SearchSerializer, ProfileSerializer)
+from rest_framework import viewsets, status
 from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from django.http import HttpResponse
@@ -13,6 +13,11 @@ from rest_framework import filters
 from rest_framework import pagination
 from .tasks import initial_scrape, continous_scrape, add_novels
 from .utils import delete_dupes, delete_unordered_chapters
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from dj_rest_auth.registration.views import SocialLoginView
+
+class GoogleLogin(SocialLoginView):
+    adapter_class = GoogleOAuth2Adapter
 
 class SearchPagination(pagination.LimitOffsetPagination):       
     page_size = 6
@@ -20,11 +25,24 @@ class SearchPagination(pagination.LimitOffsetPagination):
 class ReadOnly(BasePermission):
     def has_permission(self, request, view):
         if request.user.is_staff:
-            print(request)
             return True
         else:
             print(request.method in SAFE_METHODS)
             return request.method in SAFE_METHODS
+            
+class IsSuperUser(BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.is_superuser
+
+class IsOwner(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.user:
+            if request.user.is_superuser:
+                return True
+            else:
+                return obj.owner == request.user
+        else:
+            return False
 
 class CategorySerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
@@ -101,16 +119,6 @@ class NovelSerializerView(viewsets.ModelViewSet):
         novelViews = NovelViews.objects.get(viewsNovelName = obj.slug)
         novelViews.updateViews()
         return super().retrieve(request, *args, **kwargs)
-    # def list(self, request,*args, **kwargs):
-        
-    #     queryset = Novel.objects.all()
-    #     page = self.paginate_queryset(queryset)
-        
-    #     if page is not None:
-    #         serializer = self.get_serializer(page, many=True)
-    #         return self.get_paginated_response(serializer.data)
-    #     serializer = self.get_serializer(queryset, many=True)
-    #     return self.get_paginated_response(serializer.data)
 
 class SearchSerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
@@ -119,6 +127,16 @@ class SearchSerializerView(viewsets.ModelViewSet):
     serializer_class = SearchSerializer
     search_fields = ['name','slug']
     filter_backends = (filters.SearchFilter,)
+
+class ProfileSerializerView(viewsets.ModelViewSet):
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+    permission_classes = [IsOwner]
+    pagination_class = None
+    def get_queryset(self):
+        if self.action == 'list':
+            return self.queryset.filter(user=self.request.user)
+        return Profile.objects.none()
 
 def addNovels(request):
     add_novels.delay()
@@ -131,3 +149,4 @@ def deleteDuplicate(request):
 def deleteUnordered(request):
     delete_unordered_chapters.delay()
     return HttpResponse("<li>Done</li>")
+

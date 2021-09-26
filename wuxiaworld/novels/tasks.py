@@ -80,6 +80,8 @@ def initial_scrape(scrapeLink):
         task='wuxiaworld.novels.tasks.continous_scrape',
         args = json.dumps([queriedNovel.scrapeLink,]),
         )
+    if scraper:
+        scraper.destroy()
 
 @shared_task
 def continous_scrape(scrapeLink):
@@ -114,6 +116,8 @@ def continous_scrape(scrapeLink):
     except Exception as e:
         logger.error(f"Novel {queriedNovel.name} failed due to : {e}")
         stop_repeat_scrape(queriedNovel)
+    if scraper:
+        scraper.destroy()
 
 #Reset Views
 @shared_task

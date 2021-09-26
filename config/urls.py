@@ -5,8 +5,8 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
-from rest_framework.authtoken.views import obtain_auth_token
 from wuxiaworld.novels.views import (deleteDuplicate, deleteUnordered, addNovels)
+from wuxiaworld.novels.views import (GoogleLogin)
 
 urlpatterns = [
     # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -22,10 +22,11 @@ urlpatterns += [
     # API base url
     path("api/", include("config.api_router")),
     # DRF auth token
-    path("auth-token/", obtain_auth_token),
     path("upload/novels", addNovels),
     path("utils/deleteDupe", deleteDuplicate),
     path("utils/deleteUnordered", deleteUnordered),
+    path('dj-rest-auth/', include('dj_rest_auth.urls')),
+    path('rest-auth/google/', GoogleLogin.as_view(), name='google_login') 
 ]
 
 if settings.DEBUG:

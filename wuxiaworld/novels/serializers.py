@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from .models import Novel,Category,Author,Chapter, NovelViews, Tag
+from .models import Novel,Category,Author,Chapter, NovelViews, Tag, Profile
 from rest_framework.pagination import PageNumberPagination
 from django.utils.timezone import now
 from datetime import timedelta
 from django.contrib.humanize.templatetags.humanize import naturalday, naturaltime
+from django.contrib.auth.models import User
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -86,3 +87,24 @@ class NovelInfoSerializer(serializers.ModelSerializer):
         model = Novel
         
         fields = ('name', 'image', 'description','slug')
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("first_name", 'last_name', 'username', 'email')
+
+class ProfileSerializer(serializers.ModelSerializer):
+    initials = serializers.SerializerMethodField(method_name = "get_initials")
+    user = UserSerializer(read_only=True)
+    class Meta:
+        model = Profile
+        fields = ('user', 'imageUrl','initials' )
+    
+    def get_initials(self,obj):
+        first_name = obj.user.first_name
+        last_name = obj.user.last_name
+        if first_name and last_name:
+            return f"{first_name[0]}{last_name[0]}"
+        else:
+            return None
+        

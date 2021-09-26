@@ -4,6 +4,8 @@ from django.utils.text import slugify
 from django.utils.timezone import now
 from .signals import *
 from django.db.models import F
+from django.contrib.auth.models import User
+
 
 class Author(models.Model):
     name = models.CharField(max_length = 200)
@@ -58,8 +60,8 @@ class NovelViews(models.Model):
 class Novel(models.Model):
     SOURCE_CHOICES = [
         ('WuxSite', 'WuxSite'),
-        ('ReadNovelFull', 'Sophomore'),
-        ('NovelFull', 'Junior'),
+        ('ReadNovelFull', 'ReadNovelFull'),
+        ('NovelFull', 'NovelFull'),
         ('WuxiaCo', 'WuxiaCo'),
         ('VipNovel', 'VipNovel'),
     ]
@@ -103,3 +105,11 @@ class Chapter(models.Model):
     def __str__(self):
         return f"Chapter {self.index} - {self.novelParent}"
 
+class Bookmark(models.Model):
+    last_read_novel = models.ForeignKey(Novel,on_delete=models.CASCADE)
+    last_read_chapter = models.ForeignKey(Chapter,on_delete=models.CASCADE)
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    imageUrl = models.URLField(blank = True)
+    reading_lists = models.ManyToManyField(Bookmark,blank = True)

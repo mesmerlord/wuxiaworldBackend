@@ -7,16 +7,14 @@ import pytz
 import json
 from datetime import datetime,timedelta
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
+from allauth.socialaccount.signals import pre_social_login
+from django.contrib.auth.models import User
 
 #If Novel has a scrape link, start the initial scrape of the novel and create
 # a periodic task to scrape every x interval.
 def create_periodic_task(instance):
     if instance.scrapeLink:
             initial_scrape.delay(instance.scrapeLink)
-                
-
-# def create_thumbnail(instance):
-#     if instance.
 
 
 @receiver(post_delete, sender="novels.Novel")
@@ -49,3 +47,9 @@ def novel_check(sender,instance,**kwargs):
 def init_scrape(sender,instance,**kwargs):
     if kwargs['created']:
         create_periodic_task(instance)
+
+@receiver(post_save, sender=User)
+def create_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile = apps.get_model('novels','Profile')
+        Profile.objects.create(user=instance)
