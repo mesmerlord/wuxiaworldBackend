@@ -312,7 +312,7 @@ class Crawler(ABC):
 
     # ------------------------------------------------------------------------- #
 
-    blacklist_patterns = ["WuxiaWorld.site",'wuxiaworld.site']
+    blacklist_patterns = ["WuxiaWorld\.Site",'WuxiaWorld\.site']
     bad_tags = [
         'noscript', 'script', 'style', 'iframe', 'ins', 'header', 'footer',
         'button', 'input', 'amp-auto-ads', 'pirate', 'figcaption', 'address',
