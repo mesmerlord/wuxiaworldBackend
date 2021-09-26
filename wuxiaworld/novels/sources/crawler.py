@@ -347,7 +347,7 @@ class Crawler(ABC):
         text = text.translate(NONPRINTABLE_MAPPING)
         for k, v in self.substitutions.items():
             text = text.replace(k, v)
-        for x in blacklist_patterns:
+        for x in self.blacklist_patterns:
             text = re.sub(x,"wuxiaworld.eu",text)
         return text
     # end def
