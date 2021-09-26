@@ -312,7 +312,7 @@ class Crawler(ABC):
 
     # ------------------------------------------------------------------------- #
 
-    blacklist_patterns = ["WuxiaWorld.Site",'WuxiaWorld\.Site', ]
+    blacklist_patterns = []
     bad_tags = [
         'noscript', 'script', 'style', 'iframe', 'ins', 'header', 'footer',
         'button', 'input', 'amp-auto-ads', 'pirate', 'figcaption', 'address',
@@ -379,8 +379,8 @@ class Crawler(ABC):
     def extract_contents(self, tag) -> str:
         self.clean_contents(tag)
         body = ' '.join(self.__extract_contents(tag))
-        for x in self.blacklist_patterns:
-            text = re.sub(x,"wuxiaworld.eu",text, re.MULTILINE)
+        
+        body = re.sub("WuxiaWorld.Site","wuxiaworld.eu",body, re.MULTILINE)
         return '\n'.join([
             # '<p>' + x + '</p>'
             x
