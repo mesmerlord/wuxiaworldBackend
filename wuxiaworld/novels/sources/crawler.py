@@ -348,7 +348,7 @@ class Crawler(ABC):
         for k, v in self.substitutions.items():
             text = text.replace(k, v)
         for x in self.blacklist_patterns:
-            text = re.sub(x,"wuxiaworld.eu",text)
+            text = re.sub(x,"wuxiaworld.eu",text, re.MULTILINE)
         return text
     # end def
 
