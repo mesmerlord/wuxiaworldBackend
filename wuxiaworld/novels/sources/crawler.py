@@ -312,7 +312,7 @@ class Crawler(ABC):
 
     # ------------------------------------------------------------------------- #
 
-    blacklist_patterns = []
+    blacklist_patterns = ["WuxiaWorld.site",'wuxiaworld.site']
     bad_tags = [
         'noscript', 'script', 'style', 'iframe', 'ins', 'header', 'footer',
         'button', 'input', 'amp-auto-ads', 'pirate', 'figcaption', 'address',
@@ -340,9 +340,6 @@ class Crawler(ABC):
         '"s': "'s",
         '“s': "'s",
         '”s': "'s",
-        'WuxiaWorld.site':'wuxiaworld.eu',
-        'wuxiaworld.site':'wuxiaworld.eu',
-        'readnovelfull.com':'wuxiaworld.eu',
     }
 
     def clean_text(self, text) -> str:
@@ -350,6 +347,8 @@ class Crawler(ABC):
         text = text.translate(NONPRINTABLE_MAPPING)
         for k, v in self.substitutions.items():
             text = text.replace(k, v)
+        for x in blacklist_patterns:
+            text = re.sub(x,"wuxiaworld.eu",text)
         return text
     # end def
 
