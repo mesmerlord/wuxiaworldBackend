@@ -83,6 +83,7 @@ class Novel(models.Model):
     repeatScrape = models.BooleanField(default = False)
     novelRef = models.CharField(max_length = 50, default = "", blank = True )
     sources = models.CharField(max_length = 100,choices=SOURCE_CHOICES,default = 'WuxSite')
+    dateAdded = models.DateTimeField(default=now)
     def __str__(self):
         return self.name
 
