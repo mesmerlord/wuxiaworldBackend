@@ -103,16 +103,11 @@ def continous_scrape(scrapeLink):
             index = lastChapter.index
             print(index,lastChapter)
             if novel_chapters.count() >= len(scraper.chapters):
-                print('equal or more chapters')
-                print(scraper.chapters[-1]['id'])
-
                 return
-        print('passed return')
         toScrape = [x for x in scraper.chapters if int(x['id']) > index]
-        print(toScrape)
         results = scraper.executor.map(scraper.download_chapter_body,toScrape)
         for result in results:
-            add_chapter(result)
+            add_chapter(result,queriedNovel)
     except requests.exceptions.SSLError:
         logger.error(f"Novel {queriedNovel.name} failed due to : Proxy error. Will restart later")
     except requests.exceptions.ConnectionError :
