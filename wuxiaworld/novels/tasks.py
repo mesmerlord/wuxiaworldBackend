@@ -103,8 +103,11 @@ def continous_scrape(scrapeLink):
             index = lastChapter.index
             print(index,lastChapter)
             if novel_chapters.count() >= len(scraper.chapters):
+                print('equal or more chapters')
+                print(scraper.chapters[-1]['id'])
+
                 return
-        print(scraper.chapters[-1]['id'])
+        print('passed return')
         toScrape = [x for x in scraper.chapters if int(x['id']) > index]
         print(toScrape)
         results = scraper.executor.map(scraper.download_chapter_body,toScrape)
