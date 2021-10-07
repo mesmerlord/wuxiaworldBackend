@@ -107,10 +107,26 @@ class Chapter(models.Model):
         return f"Chapter {self.index} - {self.novelParent}"
 
 class Bookmark(models.Model):
-    last_read_novel = models.ForeignKey(Novel,on_delete=models.CASCADE)
-    last_read_chapter = models.ForeignKey(Chapter,on_delete=models.CASCADE)
+    dateAdded = models.DateTimeField(default=now)
+    novel = models.ForeignKey(Novel, on_delete = models.CASCADE)
+    chapter = models.ForeignKey(Chapter, on_delete = models.CASCADE, null=True)
 
+    def __str__(self):
+        return self.novel.name
+
+class Settings(models.Model):
+    fontSize = models.IntegerField(default = 16)
+    autoBookMark = models.BooleanField(default = False)
+    lowData = models.BooleanField(default = False)
+    darkMode = models.BooleanField(default = False)
+
+    
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     imageUrl = models.URLField(blank = True)
-    reading_lists = models.ManyToManyField(Bookmark,blank = True)
+    reading_lists = models.ManyToManyField(Bookmark,null = True, blank = True)
+    dateAdded = models.DateTimeField(default=now)
+    settings = models.OneToOneField(Settings, on_delete = models.DO_NOTHING,
+                         null=True, default = None, blank = True)
+
+

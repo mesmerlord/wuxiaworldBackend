@@ -90,7 +90,7 @@ def continous_scrape(scrapeLink):
     queriedNovel = Novel.objects.get(scrapeLink = scrapeLink)
     try:
         if not queriedNovel.repeatScrape:
-            return
+            return True
         scraper = getNovelInfo(scrapeLink)
         if not queriedNovel.novelRef:
             queriedNovel.novelRef = scraper.novel_id
@@ -116,7 +116,8 @@ def continous_scrape(scrapeLink):
         stop_repeat_scrape(queriedNovel)
     if scraper:
         scraper.destroy()
-
+    return True
+    
 #Reset Views
 @shared_task
 def reset_weekly_views():

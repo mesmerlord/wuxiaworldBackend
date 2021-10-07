@@ -1,4 +1,4 @@
-from django.db.models.signals import post_delete, pre_save,post_save
+from django.db.models.signals import post_delete, pre_save,post_save, post_delete
 from django.dispatch import receiver
 from django.apps import apps
 from django.utils.text import slugify
@@ -9,14 +9,19 @@ from datetime import datetime,timedelta
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from allauth.socialaccount.signals import pre_social_login
 from django.contrib.auth.models import User
+from allauth.socialaccount.models import SocialAccount
 
 #If Novel has a scrape link, start the initial scrape of the novel and create
 # a periodic task to scrape every x interval.
 def create_periodic_task(instance):
     if instance.scrapeLink:
             initial_scrape.delay(instance.scrapeLink)
-
-
+@receiver(post_delete, sender="novels.Profile")
+def create_profile(sender, instance, created, **kwargs):
+    settings = instance.settings
+    if settings:
+        settings.delete()
+     
 @receiver(post_delete, sender="novels.Novel")
 def clear_views(sender,instance, **kwargs):
     novelView = instance.viewsNovelName
@@ -49,8 +54,12 @@ def init_scrape(sender,instance,**kwargs):
         pass
         # create_periodic_task(instance)
 
-@receiver(post_save, sender=User)
+@receiver(post_save, sender=SocialAccount)
 def create_profile(sender, instance, created, **kwargs):
     if created:
         Profile = apps.get_model('novels','Profile')
-        Profile.objects.create(user=instance)
+        Settings = apps.get_model('novels','Settings')
+        newSettings = Settings.objects.create()
+        profile = Profile.objects.create(user=instance.user, imageUrl = instance.get_avatar_url(),
+                            settings = newSettings)
+

@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Novel, Author, Category, Chapter, NovelViews, Profile, Tag
+from .models import Novel, Author, Category, Chapter, NovelViews, Profile, Tag, Bookmark, Settings
 from .serializers import (NovelSerializer, CategorySerializer,
                         AuthorSerializer,ChaptersSerializer,ChapterSerializer,NovelInfoSerializer,
-                        SearchSerializer, ProfileSerializer,TagSerializer)
+                        SearchSerializer, ProfileSerializer,TagSerializer, BookmarkSerializer,
+                        SettingsSerializer)
 from rest_framework import viewsets, status, filters, pagination
 from rest_framework.response import Response
 from django.http import HttpResponse
@@ -14,13 +15,14 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
 from .permissions import *
 from datetime import datetime
+from rest_framework.decorators import action
+
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
 
 class SearchPagination(pagination.LimitOffsetPagination):       
     page_size = 6
-
 
 class CategorySerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
@@ -91,6 +93,7 @@ class NovelSerializerView(viewsets.ModelViewSet):
         obj = self.get_object()
         novelViews = NovelViews.objects.get(viewsNovelName = obj.slug)
         novelViews.updateViews()
+        
         return super().retrieve(request, *args, **kwargs)
 
 class SearchSerializerView(viewsets.ModelViewSet):
@@ -104,12 +107,68 @@ class SearchSerializerView(viewsets.ModelViewSet):
 class ProfileSerializerView(viewsets.ModelViewSet):
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwner, ReadOnly]
     pagination_class = None
+
     def get_queryset(self):
         if self.action == 'list':
             return self.queryset.filter(user=self.request.user)
         return Profile.objects.none()
+
+class BookmarkSerializerView(viewsets.ModelViewSet):
+    serializer_class = BookmarkSerializer
+    queryset = Bookmark.objects.all()
+    pagination_class = None
+
+    def get_queryset(self):
+        if self.action in ["list", "create", "retreive", "delete"]:
+            return self.queryset.filter(profile__user=self.request.user)
+        return Bookmark.objects.none()
+    def retrieve(self,request,pk):
+        bookmark = get_object_or_404(Bookmark,novel__slug =  pk
+                    , profile__user=self.request.user) 
+        return Response(BookmarkSerializer(bookmark).data)
+    def destroy(self,request, pk):
+        bookmark = get_object_or_404(Bookmark,novel__slug =  pk
+                    , profile__user=self.request.user) 
+        profile = Profile.objects.get(user = request.user)
+        profile.reading_lists.remove(bookmark)
+        bookmark.delete()
+        return Response({'message':'Bookmark removed'}, status=status.HTTP_200_OK)
+    def create(self, request):
+        novSlugChapSlug = request.data.get("novSlugChapSlug")
+        novSlug = request.data.get("novSlug")
+        if not novSlugChapSlug and not novSlug:
+            return Response({'message':'novSlugChapSlug or novSlug not provided'},
+             status = status.HTTP_404_NOT_FOUND)
+        if novSlugChapSlug:
+            chapter = get_object_or_404(Chapter, novSlugChapSlug = novSlugChapSlug)
+            bookmark, created = Bookmark.objects.update_or_create(novel = chapter.novelParent, 
+                        profile__user = request.user, defaults={'chapter':chapter})
+            
+        elif novSlug:
+            novel = get_object_or_404(Novel, slug = novSlug)
+            bookmark, created = Bookmark.objects.update_or_create(novel = novel, 
+                        profile__user = request.user)
+        if created:
+            profile = Profile.objects.get(user = request.user)
+            profile.reading_lists.add(bookmark)
+            profile.save()
+        return Response(BookmarkSerializer(bookmark).data)
+
+class SettingsSerializerView(viewsets.ModelViewSet):
+    serializer_class = SettingsSerializer
+    queryset = Settings.objects.all()
+
+    def get_queryset(self):
+        if self.action in ['partial_update', 'update']:
+            return self.queryset.filter(profile__user=self.request.user
+                         )
+        return Settings.objects.none()
+
+    def create(self, request):
+        return Response({'message':'Not allowed'},
+             status = status.HTTP_404_NOT_FOUND)
 
 def addNovels(request):
     add_novels.delay()

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Novel,Category,Author,Chapter, NovelViews, Tag, Profile
+from .models import Novel,Category,Author,Chapter, NovelViews, Tag, Profile, Bookmark, Settings
 from rest_framework.pagination import PageNumberPagination
 from django.utils.timezone import now
 from datetime import timedelta
@@ -90,20 +90,32 @@ class NovelSerializer(serializers.ModelSerializer):
 class NovelInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Novel
-        
-        fields = ('name', 'image', 'description','slug')
+        fields = ('name', 'image', 'slug', )
+
+class LoggedNovelInfoSerializer(serializers.ModelSerializer):
+    bookmarked = serializers.SerializerMethodField(method_name = "get_bookmark")
+    class Meta:
+        model = Novel
+        fields = ('name', 'image', 'description','slug','bookmarked')
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("first_name", 'last_name', 'username', 'email')
 
+class SettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Settings
+        fields = "__all__"
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     initials = serializers.SerializerMethodField(method_name = "get_initials")
     user = UserSerializer(read_only=True)
+    settings = SettingsSerializer()
     class Meta:
         model = Profile
-        fields = ('user', 'imageUrl','initials' )
+        fields = ('user', 'imageUrl','initials', 'settings' )
     
     def get_initials(self,obj):
         first_name = obj.user.first_name
@@ -112,4 +124,44 @@ class ProfileSerializer(serializers.ModelSerializer):
             return f"{first_name[0]}{last_name[0]}"
         else:
             return None
-        
+class BookmarkSerializer(serializers.ModelSerializer):
+    # novSlugChapSlug = serializers.CharField(source = "chapter.novSlugChapSlug", allow_null=True)
+    last_read = serializers.SerializerMethodField(method_name = "get_last_read")
+    last_chapter = serializers.SerializerMethodField(method_name = "get_last_chapter")
+    next_chapter = serializers.SerializerMethodField(method_name = "get_next_chapter")
+
+    novelInfo = NovelInfoSerializer(source = "novel")
+    class Meta:
+        model = Bookmark
+        fields = ("last_read","last_chapter", "next_chapter", "dateAdded", "id", "novelInfo")
+
+    def get_last_read(self,obj):
+        if obj.chapter:
+            return ChaptersSerializer(obj.chapter).data
+        elif obj.novel:
+            data = Chapter.objects.filter(novelParent = obj.novel).order_by('index')
+            if data:
+                return ChaptersSerializer(data.first()).data
+            else:
+                return None
+    def get_next_chapter(self,obj):
+        if obj.chapter:
+            chapter = Chapter.objects.filter(novelParent = obj.chapter.novelParent
+                        , index__gt = obj.chapter.index).order_by('index').first()
+            if chapter:
+                return ChaptersSerializer(chapter.first()).data
+            else:
+                return None
+        else:
+            return None
+
+    def get_last_chapter(self,obj):
+        lastChapter = None
+        if obj.chapter:
+            lastChapter = Chapter.objects.filter(novelParent = obj.chapter.novelParent).order_by('-index').first()
+        elif obj.novel:
+            lastChapter = Chapter.objects.filter(novelParent = obj.novel).order_by('-index').first() 
+        if lastChapter:
+            return ChaptersSerializer(lastChapter).data
+        else:
+            return None

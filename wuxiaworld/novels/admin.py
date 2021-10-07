@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Novel,Author,Category,Chapter,NovelViews, Tag, Profile, Bookmark
+from .models import Novel,Author,Category,Chapter,NovelViews, Tag, Profile, Bookmark, Settings
 
 def repeat_scrape_on(modeladmin, request, queryset):
     queryset.update(repeatScrape=True)
@@ -31,8 +31,21 @@ class NovelViewsAdmin(admin.ModelAdmin):
     list_display = ['views_name', "views" ]
     search_fields = ['viewsNovelName']
 
+
+@admin.register(Profile)
+class ProfileAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['reading_lists']
+
+@admin.register(Bookmark)
+class BookmarkAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['novel', "chapter"]
+    search_fields = ['novel___name']
+
 admin.site.register(Author)
 admin.site.register(Category)
 admin.site.register(Tag)
-admin.site.register(Profile)
-admin.site.register(Bookmark)
+admin.site.register(Settings)
+
+    
+
+

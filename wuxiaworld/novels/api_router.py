@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from .views import (NovelSerializerView, CategorySerializerView, 
                 AuthorSerializerView, ChaptersSerializerView,SingleChapterSerializerView,
-                SearchSerializerView, ProfileSerializerView, TagSerializerView )
+                SearchSerializerView, ProfileSerializerView, TagSerializerView, 
+                BookmarkSerializerView, SettingsSerializerView )
 
 
 if settings.DEBUG:
@@ -19,6 +20,8 @@ router.register('getchapter', SingleChapterSerializerView)
 router.register('chapters', ChaptersSerializerView)
 router.register('search', SearchSerializerView)
 router.register('users', ProfileSerializerView)
+router.register('bookmark', BookmarkSerializerView)
+router.register('settings', SettingsSerializerView)
 
 app_name = "api"
 urlpatterns = router.urls
