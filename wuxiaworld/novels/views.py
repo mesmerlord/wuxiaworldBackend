@@ -145,7 +145,6 @@ class BookmarkSerializerView(viewsets.ModelViewSet):
             chapter = get_object_or_404(Chapter, novSlugChapSlug = novSlugChapSlug)
             bookmark, created = Bookmark.objects.update_or_create(novel = chapter.novelParent, 
                         profile__user = request.user, defaults={'chapter':chapter})
-            print(bookmark.chapter)
         elif novSlug:
             novel = get_object_or_404(Novel, slug = novSlug)
             bookmark, created = Bookmark.objects.update_or_create(novel = novel, 
