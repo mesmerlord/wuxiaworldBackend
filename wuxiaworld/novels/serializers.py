@@ -147,7 +147,7 @@ class BookmarkSerializer(serializers.ModelSerializer):
     def get_next_chapter(self,obj):
         if obj.chapter:
             chapter = Chapter.objects.filter(novelParent = obj.chapter.novelParent
-                        , index__gt = obj.chapter.index).order_by('index').first()
+                        , index__gt = obj.chapter.index).order_by('index')
             if chapter:
                 return ChaptersSerializer(chapter.first()).data
             else:
