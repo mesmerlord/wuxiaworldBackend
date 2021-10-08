@@ -143,18 +143,15 @@ class BookmarkSerializerView(viewsets.ModelViewSet):
              status = status.HTTP_404_NOT_FOUND)
         if novSlugChapSlug:
             chapter = get_object_or_404(Chapter, novSlugChapSlug = novSlugChapSlug)
-            print(chapter)
             bookmark, created = Bookmark.objects.update_or_create(novel = chapter.novelParent, 
                         profile__user = request.user, defaults={'chapter':chapter})
-            print(bookmark)
+            print(bookmark.chapter)
         elif novSlug:
             novel = get_object_or_404(Novel, slug = novSlug)
             bookmark, created = Bookmark.objects.update_or_create(novel = novel, 
                         profile__user = request.user)
-        if created:
-            profile = Profile.objects.get(user = request.user)
-            profile.reading_lists.add(bookmark)
-            profile.save()
+        profile = Profile.objects.get(user = request.user)
+        profile.reading_lists.add(bookmark)
         return Response(BookmarkSerializer(bookmark).data)
 
 class SettingsSerializerView(viewsets.ModelViewSet):
