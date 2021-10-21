@@ -61,7 +61,7 @@ def initial_scrape(scrapeLink):
     try:
         scraper = getNovelInfo(scrapeLink)
         queriedNovel.novelRef = scraper.novel_id
-        results = scraper.executor.map(scraper.download_chapter_body,scraper.chapters)
+        results = scraper.executor.map(scraper.download_chapter_body,scraper.chapters[:10])
         for result in results:
             add_chapter(result, queriedNovel)
             
