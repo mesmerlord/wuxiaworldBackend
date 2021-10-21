@@ -152,6 +152,10 @@ def new_novel(x):
     Tag = apps.get_model('novels', 'Tag')
     Category = apps.get_model('novels', 'Category')
     Author = apps.get_model('novels', 'Author')
+
+    novelInDb = Novel.objects.filter(slug = slugify(x['Book Name'])).count()
+    if novelInDb > 0:
+        return True
     try:
         tags = x['Book Tags'].split(",")
         tagsToPut = []
