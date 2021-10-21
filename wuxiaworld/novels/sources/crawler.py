@@ -40,7 +40,7 @@ class Crawler(ABC):
     def __init__(self) -> None:
         self._destroyed = False
         self.executor = ThreadPoolExecutor(max_workers=4)
-
+        self.novel_id = 0
         # Initialize cloudscrapper
         try:
             self.scraper = cloudscraper.create_scraper(
@@ -326,7 +326,7 @@ class Crawler(ABC):
     ]
     p_block_tags = [
         'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-        'main', 'aside', 'article', 'div', 'section','strong','em'
+        'main', 'aside', 'article', 'div', 'section','strong','em', 'sup'
     ]
     unchanged_tags = [
         'pre', 'canvas', 'img'
@@ -378,9 +378,12 @@ class Crawler(ABC):
 
     def extract_contents(self, tag) -> str:
         self.clean_contents(tag)
-        body = ' '.join(self.__extract_contents(tag))
+        body = ''.join(self.__extract_contents(tag))
         
-        body = re.sub("WuxiaWorld.Site","wuxiaworld.eu",body, re.MULTILINE)
+        body = re.sub("Read latest.*? at .*?\n","Read new chapters at wuxiaworld.eu",body, re.MULTILINE)
+        body = re.sub("Translator\s*?:\s*?\n|Editor\s*?:\s*?\n|AtlasStudios\s*?:\s*?\n|Previous Chapter|Next Chapter",
+                "",body, re.MULTILINE)
+        
         return '\n'.join([
             # '<p>' + x + '</p>'
             x
@@ -413,7 +416,7 @@ class Crawler(ABC):
 
             is_block = elem.name in self.p_block_tags
             is_plain = elem.name in self.plain_text_tags
-            content = ' '.join(self.__extract_contents(elem))
+            content = ''.join(self.__extract_contents(elem))
 
             if is_block:
                 body.append(LINE_SEP)

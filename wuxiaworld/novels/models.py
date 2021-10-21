@@ -19,7 +19,7 @@ class Author(models.Model):
 
 class Category(models.Model):
     #Also used for language instead of creating a new model
-    name = models.CharField(max_length = 200)
+    name = models.CharField(max_length = 200, unique=True)
     slug = models.CharField(max_length = 200, blank = True)
     def __str__(self):
         return self.name
@@ -29,7 +29,7 @@ class Category(models.Model):
         super(Category, self).save(*args, **kwargs)
 
 class Tag(models.Model):
-    name = models.CharField(max_length = 200)
+    name = models.CharField(max_length = 200, unique = True)
     slug = models.CharField(max_length = 200, blank = True)
     def __str__(self):
         return self.name
@@ -74,7 +74,7 @@ class Novel(models.Model):
     category = models.ManyToManyField(Category, blank=True)
     tag = models.ManyToManyField(Tag, blank=True, default = None)
     description = models.TextField(blank = True)
-    slug = models.SlugField(primary_key = True, default = None, max_length=200, blank = True)
+    slug = models.SlugField(primary_key = True, default = None, max_length=200, blank = True, unique = True)
     numOfChaps = models.IntegerField(default = 0)
     numOfTranslatedChaps = models.IntegerField(default = 0)
     novelStatus = models.BooleanField(default = True) #True will be for Ongoing, False for Completed

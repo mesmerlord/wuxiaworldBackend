@@ -12,6 +12,10 @@ from celery.schedules import crontab
 import random
 from .utils import *
 from .sources.wuxiasite import WuxiaSiteCrawler
+from .sources.readnovelfull import ReadNovelFullCrawler
+from .sources.vipnovel import VipNovel
+from .sources.wuxiaco import WuxiaCoCrawler
+
 import os
 import logging
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
@@ -31,6 +35,12 @@ def getNovelInfo(scrapeLink):
     queriedNovel = Novel.objects.get(scrapeLink = scrapeLink)
     if queriedNovel.sources == "WuxSite":
         scraper = WuxiaSiteCrawler()
+    elif queriedNovel.sources == "ReadNovelFull":
+        scraper = ReadNovelFullCrawler()
+    elif queriedNovel.sources == "VipNovel":
+        scraper = VipNovel()
+    elif queriedNovel.sources == "WuxiaCo":
+        scraper = WuxiaCoCrawler()
     scraper.novel_url = scrapeLink
     scraper.read_novel_info()
     
@@ -51,7 +61,6 @@ def initial_scrape(scrapeLink):
     try:
         scraper = getNovelInfo(scrapeLink)
         queriedNovel.novelRef = scraper.novel_id
-
         results = scraper.executor.map(scraper.download_chapter_body,scraper.chapters)
         for result in results:
             add_chapter(result, queriedNovel)
@@ -161,11 +170,23 @@ def new_novel(x):
     except Exception as e:
         logger.error(f"Book {x['Book Name']} , author {x['Book Author']} already exists")
     
+    if "wuxiaworld.site" in x['novelLink']:
+        source = "WuxSite" 
+    elif "vipnovel.com" in x['novelLink']:
+        source = "VipNovel"
+    elif ".novelfull.com" in x['novelLink']:
+        source = "NovelFull"
+    elif "wuxiaworld.co/" in x['novelLink']:
+        source = "WuxiaCo"
+    elif "readnovelfull.com" in x['novelLink']:
+        source = "ReadNovelFull"
+    else:
+        source = ""
     novel, _ = Novel.objects.get_or_create(slug = slugify(x['Book Name']), author = author,
             defaults = {'slug': slugify(x['Book Name']), 'name' : x['Book Name'], 'image' : x['Book Image'], 'imageThumb' : x['thumbnail'],
             'linkNU' : x['Book URL'], 'description' : x['Description'], 'numOfChaps' : int(x['Book Chapters'].strip().split(" ")[0]),
             'numOfTranslatedChaps' : 0, 'novelStatus' : False , 'scrapeLink' : x['novelLink'], 'repeatScrape' : True,
-            'sources':'WuxSite'})
+            'sources':source})
     
     novel.category.set(categoriesToPut)
     novel.tag.set(tagsToPut)
@@ -173,10 +194,12 @@ def new_novel(x):
 
 @shared_task
 def add_novels():
-    df = pd.read_csv('actual.csv').astype(str)
-    df.applymap(lambda x: "" if len(x)>199 else x)
-    for _ , x in df.iterrows():
-        new_novel.delay(x.to_dict())
+    sources = os.listdir('sources')
+    for source in sources:
+        df = pd.read_csv(f'sources/{source}').astype(str)
+        df.applymap(lambda x: "" if len(x)>199 else x)
+        for _ , x in df.iterrows():
+            new_novel.delay(x.to_dict())
         
         
 
