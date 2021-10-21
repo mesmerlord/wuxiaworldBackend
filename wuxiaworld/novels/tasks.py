@@ -152,46 +152,47 @@ def new_novel(x):
     Tag = apps.get_model('novels', 'Tag')
     Category = apps.get_model('novels', 'Category')
     Author = apps.get_model('novels', 'Author')
-
-    tags = x['Book Tags'].split(",")
-    tagsToPut = []
-    for tag in tags:
-        gotTag, _ = Tag.objects.get_or_create(name = tag)
-        tagsToPut.append(gotTag)
-
-    categories = x['Book Genre'].split(":")
-    categoriesToPut = []  
-    for category in categories:
-        gotCategory, _ = Category.objects.get_or_create(name = category)
-        categoriesToPut.append(gotCategory)
     try:
-        author, _ = Author.objects.get_or_create(slug = slugify(x['Book Author']),
-                                                defaults = {'name' : x['Book Author']})
-    except Exception as e:
-        logger.error(f"Book {x['Book Name']} , author {x['Book Author']} already exists")
-    
-    if "wuxiaworld.site" in x['novelLink']:
-        source = "WuxSite" 
-    elif "vipnovel.com" in x['novelLink']:
-        source = "VipNovel"
-    elif ".novelfull.com" in x['novelLink']:
-        source = "NovelFull"
-    elif "wuxiaworld.co/" in x['novelLink']:
-        source = "WuxiaCo"
-    elif "readnovelfull.com" in x['novelLink']:
-        source = "ReadNovelFull"
-    else:
-        source = ""
-    novel, _ = Novel.objects.get_or_create(slug = slugify(x['Book Name']), author = author,
-            defaults = {'slug': slugify(x['Book Name']), 'name' : x['Book Name'], 'image' : x['Book Image'], 'imageThumb' : x['thumbnail'],
-            'linkNU' : x['Book URL'], 'description' : x['Description'], 'numOfChaps' : int(x['Book Chapters'].strip().split(" ")[0]),
-            'numOfTranslatedChaps' : 0, 'novelStatus' : False , 'scrapeLink' : x['novelLink'], 'repeatScrape' : True,
-            'sources':source})
-    
-    novel.category.set(categoriesToPut)
-    novel.tag.set(tagsToPut)
-    novel.save()
+        tags = x['Book Tags'].split(",")
+        tagsToPut = []
+        for tag in tags:
+            gotTag, _ = Tag.objects.get_or_create(name = tag)
+            tagsToPut.append(gotTag)
 
+        categories = x['Book Genre'].split(":")
+        categoriesToPut = []  
+        for category in categories:
+            gotCategory, _ = Category.objects.get_or_create(name = category)
+            categoriesToPut.append(gotCategory)
+        try:
+            author, _ = Author.objects.get_or_create(slug = slugify(x['Book Author']),
+                                                    defaults = {'name' : x['Book Author']})
+        except Exception as e:
+            logger.error(f"Book {x['Book Name']} , author {x['Book Author']} already exists")
+        
+        if "wuxiaworld.site" in x['novelLink']:
+            source = "WuxSite" 
+        elif "vipnovel.com" in x['novelLink']:
+            source = "VipNovel"
+        elif ".novelfull.com" in x['novelLink']:
+            source = "NovelFull"
+        elif "wuxiaworld.co/" in x['novelLink']:
+            source = "WuxiaCo"
+        elif "readnovelfull.com" in x['novelLink']:
+            source = "ReadNovelFull"
+        else:
+            source = ""
+        novel, _ = Novel.objects.get_or_create(slug = slugify(x['Book Name']), author = author,
+                defaults = {'slug': slugify(x['Book Name']), 'name' : x['Book Name'], 'image' : x['Book Image'], 'imageThumb' : x['thumbnail'],
+                'linkNU' : x['Book URL'], 'description' : x['Description'], 'numOfChaps' : int(x['Book Chapters'].strip().split(" ")[0]),
+                'numOfTranslatedChaps' : 0, 'novelStatus' : False , 'scrapeLink' : x['novelLink'], 'repeatScrape' : True,
+                'sources':source})
+        
+        novel.category.set(categoriesToPut)
+        novel.tag.set(tagsToPut)
+        novel.save()
+    except Exception as e:
+        print(e)
 @shared_task
 def add_novels():
     sources = os.listdir('sources')
