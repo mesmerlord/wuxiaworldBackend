@@ -3,3 +3,10 @@
 ** Add an expiry time to all celery tasks so no raceconditions happen
 ** Create Token auth for backend
 ** Change from crontab to schedule for celerybeat
+
+from wuxiaworld.novels.models import Tag
+
+tags = Tags.objects.all()
+for tag in tags:
+    if tags.filter(name = tag.name).count() > 1:
+        print(tag)

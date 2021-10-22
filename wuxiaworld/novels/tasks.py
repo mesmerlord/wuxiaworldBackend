@@ -19,7 +19,7 @@ from .sources.wuxiaco import WuxiaCoCrawler
 import os
 import logging
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
-
+from django.conf import settings
 
 logger = logging.getLogger("sentry_sdk")
 
@@ -61,7 +61,10 @@ def initial_scrape(scrapeLink):
     try:
         scraper = getNovelInfo(scrapeLink)
         queriedNovel.novelRef = scraper.novel_id
-        results = scraper.executor.map(scraper.download_chapter_body,scraper.chapters[:10])
+        if settings.DEBUG:
+            results = scraper.executor.map(scraper.download_chapter_body,scraper.chapters[:2])
+        else:
+            results = scraper.executor.map(scraper.download_chapter_body,scraper.chapters[:10])
         for result in results:
             add_chapter(result, queriedNovel)
             
@@ -97,6 +100,8 @@ def continous_scrape(scrapeLink):
     Novel = apps.get_model("novels", "Novel")
     Chapter = apps.get_model("novels", "Chapter")
     queriedNovel = Novel.objects.get(scrapeLink = scrapeLink)
+    if settings.DEBUG:
+        return
     try:
         if not queriedNovel.repeatScrape:
             return True

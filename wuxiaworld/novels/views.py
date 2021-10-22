@@ -58,11 +58,25 @@ class SingleChapterSerializerView(viewsets.ModelViewSet):
     queryset = Chapter.objects.all()
 
     def retrieve(self, request, pk = None):
-        object = get_object_or_404(self.queryset,novSlugChapSlug = pk)
-        novParent = object.novelParent
+        obj = get_object_or_404(self.queryset,novSlugChapSlug = pk)
+        novParent = obj.novelParent
         novelViewParent = NovelViews.objects.get(viewsNovelName = novParent.slug)
         novelViewParent.updateViews()
-        serializer = ChapterSerializer(object)
+        serializer = ChapterSerializer(obj)
+        if request.user.is_authenticated:
+            try:
+                userSettings = Settings.objects.get(profile__user=self.request.user)
+                if userSettings.autoBookMark:
+                    userBookmarks = Bookmark.objects.filter(profile__user=self.request.user,
+                        novel = novParent)
+                    if userBookmarks:
+                        bookmark = userBookmarks.first()
+                        if not bookmark.chapter or bookmark.chapter.index < obj.index:
+                            bookmark.chapter = obj
+                            bookmark.save()
+                        
+            except Exception as e:
+                print(e)
         return Response(serializer.data)
 
     def list(self, request):
