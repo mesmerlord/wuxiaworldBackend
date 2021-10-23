@@ -74,7 +74,8 @@ CACHES = {
 # ------------------------
 STATIC_URL = "/static/"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-STATICFILES_DIRS = [str(APPS_DIR / "static"), str(APPS_DIR / "frontend/builtFiles/build/static")]
+STATICFILES_DIRS = [str(APPS_DIR / "static"), str(APPS_DIR / "frontend/builtFiles/build/static"),
+            str(APPS_DIR / "frontend/builtFiles/build")]
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
