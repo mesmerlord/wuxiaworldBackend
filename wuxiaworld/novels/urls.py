@@ -32,6 +32,7 @@ urlpatterns += [
 ]
 if not settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static("",document_root=str(ROOT_DIR / "frontend/builtFiles/build"))
 
 if settings.DEBUG:
 
