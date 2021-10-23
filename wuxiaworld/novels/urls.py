@@ -6,7 +6,7 @@ from django.urls import include, path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from wuxiaworld.novels.views import (deleteDuplicate, deleteUnordered, addNovels,siteMap)
-from wuxiaworld.novels.views import (GoogleLogin)
+from wuxiaworld.novels.views import (GoogleLogin, home)
 
 urlpatterns = [
     # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -27,7 +27,8 @@ urlpatterns += [
     path("utils/deleteUnordered", deleteUnordered),
     path("utils/sitemap/<site>", siteMap),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('rest-auth/google/', GoogleLogin.as_view(), name='google_login') 
+    path('rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
+    path('', home)
 ]
 
 if settings.DEBUG:

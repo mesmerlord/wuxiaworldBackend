@@ -16,7 +16,10 @@ from dj_rest_auth.registration.views import SocialLoginView
 from .permissions import *
 from datetime import datetime
 from rest_framework.decorators import action
+from django.conf import settings
 
+def home(request):
+    return render(request, settings.STATIC_URL + "index.html")
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
