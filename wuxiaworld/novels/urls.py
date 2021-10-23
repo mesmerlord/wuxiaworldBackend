@@ -6,6 +6,7 @@ from django.urls import include, path,re_path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from wuxiaworld.novels.views import (deleteDuplicate, deleteUnordered, addNovels,siteMap)
+from wuxiaworld.novels.views import (GoogleLogin)
 
 urlpatterns = [
     # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
