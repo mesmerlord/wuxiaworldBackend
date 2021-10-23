@@ -75,7 +75,7 @@ CACHES = {
 STATIC_ROOT = str(ROOT_DIR / "frontend/builtfiles/build")
 STATIC_URL = "/static/"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-STATICFILES_DIRS = [str(APPS_DIR / "static"), str(STATIC_ROOT / "static") ]
+STATICFILES_DIRS = [str(APPS_DIR / "static"), STATIC_ROOT + "static" ]
 
 # TEMPLATES
 # ------------------------------------------------------------------------------
