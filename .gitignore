@@ -284,3 +284,5 @@ wuxiaworld/media/
 !.envs/.local/
 
 chapters/
+frontend/*/
+!frontend/build/
