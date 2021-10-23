@@ -18,9 +18,6 @@ from datetime import datetime
 from rest_framework.decorators import action
 from django.conf import settings
 
-def home(request):
-    return render(request, str(ROOT_DIR / "frontend/builtFiles/build/index.html"))
-
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
 
