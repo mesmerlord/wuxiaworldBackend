@@ -28,11 +28,11 @@ urlpatterns += [
     path("utils/sitemap/<site>", siteMap),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
     path('rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
-    path('', home)
+    
 ]
 if not settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static("",document_root=str(ROOT_DIR / "frontend/builtFiles/build"))
+urlpatterns += re_path(path(r'.*', home))
 
 if settings.DEBUG:
 
