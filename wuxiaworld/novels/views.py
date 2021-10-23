@@ -19,7 +19,7 @@ from rest_framework.decorators import action
 from django.conf import settings
 
 def home(request):
-    return render(request, settings.STATIC_URL + "index.html")
+    return render(request, settings.STATIC_ROOT + "/index.html")
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
