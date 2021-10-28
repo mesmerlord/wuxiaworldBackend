@@ -255,7 +255,8 @@ LOGGING = {
 
 # Celery
 # ------------------------------------------------------------------------------
-CELERY_ENABLE_UTC = False
+CELERY_ENABLE_UTC = True
+CELERY_TIMEZONE = 'UTC'
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-broker_url
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_backend
