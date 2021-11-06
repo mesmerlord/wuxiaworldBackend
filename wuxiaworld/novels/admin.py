@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Novel,Author,Category,Chapter,NovelViews, Tag, Profile, Bookmark, Settings
+from .models import (Novel,Author,Category,Chapter,NovelViews, 
+                    Tag, Profile, Bookmark, Settings, BlacklistPattern)
 
 def repeat_scrape_on(modeladmin, request, queryset):
     queryset.update(repeatScrape=True)
@@ -45,6 +46,7 @@ admin.site.register(Author)
 admin.site.register(Category)
 admin.site.register(Tag)
 admin.site.register(Settings)
+admin.site.register(BlacklistPattern)
 
     
 

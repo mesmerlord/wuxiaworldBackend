@@ -129,4 +129,9 @@ class Profile(models.Model):
     settings = models.OneToOneField(Settings, on_delete = models.DO_NOTHING,
                          null=True, default = None, blank = True)
 
-
+class BlacklistPattern(models.Model):
+    dateAdded = models.DateTimeField(default=now)
+    pattern = models.TextField(max_length = 100,blank = True, null = True)
+    enabled = models.BooleanField(default = True)
+    replacement = models.TextField(max_length = 100,blank = True, null = True,
+                    default = "")

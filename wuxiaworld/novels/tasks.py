@@ -20,6 +20,9 @@ import os
 import logging
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from django.conf import settings
+from django.db.models.functions import Replace
+from django.db.models import Value, F, Func
+from django.db import models 
 
 logger = logging.getLogger("sentry_sdk")
 
@@ -48,16 +51,34 @@ def getNovelInfo(scrapeLink):
 
 def add_chapter(chapter, queriedNovel):
     Chapter = apps.get_model('novels', 'Chapter')
+    BlacklistPattern = apps.get_model('novels', 'BlacklistPattern')
+    listOfPatterns = BlacklistPattern.objects.filter(enabled = True, replacement = "").values_list(
+        'pattern', flat=True
+    )
+    patternText = "|".join(listOfPatterns)
+
+    chapterText = re.sub(patternText, "",chapter['body'] )
+    patternsWithReplacement = BlacklistPattern.objects.filter(enabled = True).exclude(replacement = "")
+        
+    for pat in patternsWithReplacement:
+        pattern = fr'{pat.pattern}'
+        replacement = fr"{pat.replacement}"
+        chapterText = re.sub(pattern, replacement,chapterText )
+        
+
     _, chapter = Chapter.objects.get_or_create(index = chapter['chapter']['id'],
                 novelParent = queriedNovel, defaults={
-                'text':chapter['body'],'title':chapter['chapter']['title'],
+                'text':chapterText,'title':chapter['chapter']['title'],
                 'scrapeLink':chapter['chapter']['url']
             })
 
 @shared_task
-def initial_scrape(scrapeLink):
+def initial_scrape(scrapeLink) -> dict:
     Novel = apps.get_model("novels", "Novel")
     queriedNovel = Novel.objects.get(scrapeLink = scrapeLink)
+    result = {}
+    error = {}
+    scraper = None
     try:
         scraper = getNovelInfo(scrapeLink)
         queriedNovel.novelRef = scraper.novel_id
@@ -67,18 +88,21 @@ def initial_scrape(scrapeLink):
             results = scraper.executor.map(scraper.download_chapter_body,scraper.chapters[:10])
         for result in results:
             add_chapter(result, queriedNovel)
-            
+        
+        result = {'data':f"{len(scraper.chapters)} chapters downloaded for {queriedNovel.name}"}
         queriedNovel.repeatScrape = True
         queriedNovel.save()
 
-    except requests.exceptions.SSLError:
+    except requests.exceptions.SSLError as e:
+        error = {'error':"SSL Error"}
         logger.error(f"Novel {queriedNovel.name} failed due to : Proxy error. Will restart later")
     
-    except requests.exceptions.ConnectionError :
+    except requests.exceptions.ConnectionError as e:
+        error = {'error':"ConnectionError Error"}
         logger.error(f"Novel {queriedNovel.name} failed due to : Connection error. Will restart later")
 
     except Exception as e:
-        raise e
+        error = {'error':f"{e}"}
         logger.error(f"Novel {queriedNovel.name} failed due to : {e}")
         stop_repeat_scrape(queriedNovel)
 
@@ -94,14 +118,16 @@ def initial_scrape(scrapeLink):
         )
     if scraper:
         scraper.destroy()
+    return {'result':result,'error':error}
 
 @shared_task
 def continous_scrape(scrapeLink):
     Novel = apps.get_model("novels", "Novel")
     Chapter = apps.get_model("novels", "Chapter")
     queriedNovel = Novel.objects.get(scrapeLink = scrapeLink)
-    if settings.DEBUG:
-        return
+    scraper = None
+    result = {}
+    error = {}
     try:
         if not queriedNovel.repeatScrape:
             return True
@@ -117,20 +143,28 @@ def continous_scrape(scrapeLink):
             index = lastChapter.index
             if novel_chapters.count() >= len(scraper.chapters):
                 return
-        toScrape = [x for x in scraper.chapters if int(x['id']) > index]
+        if settings.DEBUG:
+            toScrape = [x for x in scraper.chapters if int(x['id']) > index][:3]
+        else:
+            toScrape = [x for x in scraper.chapters if int(x['id']) > index]
         results = scraper.executor.map(scraper.download_chapter_body,toScrape)
         for result in results:
             add_chapter(result,queriedNovel)
+        result = {'data':f"{len(scraper.chapters)} chapters downloaded for {queriedNovel.name}"}
+        
     except requests.exceptions.SSLError:
+        error = {'error':"SSL Error"}
         logger.error(f"Novel {queriedNovel.name} failed due to : Proxy error. Will restart later")
     except requests.exceptions.ConnectionError :
+        error = {'error':"Connection Error"}
         logger.error(f"Novel {queriedNovel.name} failed due to : Proxy error. Will restart later")
     except Exception as e:
+        error = {'error':f"{e}"}
         logger.error(f"Novel {queriedNovel.name} failed due to : {e}")
         stop_repeat_scrape(queriedNovel)
     if scraper:
         scraper.destroy()
-    return True
+    return {'result':result,'error':error}
     
 #Reset Views
 @shared_task
@@ -150,6 +184,42 @@ def reset_yearly_views():
     NovelViews = apps.get_model('novels', 'NovelViews')
     novels = NovelViews.objects.all()
     novels.update(yearlyViews = 0)
+
+
+@shared_task
+def filter_blacklist_patterns():
+    Chapter = apps.get_model('novels', 'Chapter')
+    BlacklistPattern = apps.get_model('novels', 'BlacklistPattern')
+
+    listOfPatterns = BlacklistPattern.objects.filter(enabled = True, replacement = "").values_list(
+        'pattern', flat=True
+    )
+    patternText = "|".join(listOfPatterns)
+    pattern = Value(fr'{patternText}')
+    replacement = Value(r'') 
+    flags = Value('g')
+    Chapter.objects.update(
+        text=Func(
+            models.F('text'),
+            pattern, replacement, flags,
+            function='REGEXP_REPLACE',
+            output_field=models.TextField(),
+        )
+    )
+
+    patternsWithReplacement = BlacklistPattern.objects.filter(enabled = True).exclude(replacement = "")
+        
+    for pat in patternsWithReplacement:
+        pattern = Value(fr'{pat.pattern}')
+        replacement = Value(fr"{pat.replacement}")
+        Chapter.objects.update(
+        text= Func(
+            models.F('text'),
+            pattern, replacement, flags,
+            function='REGEXP_REPLACE',
+            output_field=models.TextField(),
+        )
+        )
 
 @shared_task
 def new_novel(x):

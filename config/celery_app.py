@@ -29,4 +29,9 @@ app.conf.beat_schedule = {
         'task': 'wuxiaworld.novels.tasks.reset_yearly_views',
         'schedule': crontab(hour=0, minute=0,day_of_week = 0, month_of_year = 1),
     },
+
+    'filter_chapter_text': {
+        'task': 'wuxiaworld.novels.tasks.filter_blacklist_patterns',
+        'schedule': crontab(hour=0, minute=0),
+    }
 }

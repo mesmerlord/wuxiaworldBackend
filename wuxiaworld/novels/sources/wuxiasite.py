@@ -57,7 +57,6 @@ class WuxiaSiteCrawler(Crawler):
             self.novel_id = soup.select_one('#manga-chapters-holder')['data-id']
         except:
             self.novel_id = soup.select_one('.wp-manga-action-button')['data-post']
-
         # logger.info('Novel Id = %s', self.novel_id)
 
         # soup = self.make_soup(self.submit_form(
@@ -69,6 +68,18 @@ class WuxiaSiteCrawler(Crawler):
         # ))
 
         chapters = soup.select('ul.main li.wp-manga-chapter a')
+
+        if not chapters:
+            newChapLink = f"{self.novel_url}ajax/chapters/"
+            soup = self.make_soup(self.submit_form(
+            newChapLink,
+            
+            headers = {
+                'origin': 'https://wuxiaworld.site',
+                'user-agent':' Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'
+            }
+            ))
+            chapters = soup.select('li.wp-manga-chapter a')
         chapters.reverse()
 
         for a in chapters:

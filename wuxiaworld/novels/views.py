@@ -135,16 +135,16 @@ class BookmarkSerializerView(viewsets.ModelViewSet):
     pagination_class = None
 
     def get_queryset(self):
-        if self.action in ["list", "create", "retreive", "delete"]:
+        if self.action in ["list", "create", "retreive", "delete"] and \
+            self.request.user.is_authenticated:
             return self.queryset.filter(profile__user=self.request.user)
         return Bookmark.objects.none()
     def retrieve(self,request,pk):
-        bookmark = get_object_or_404(Bookmark,novel__slug =  pk
-                    , profile__user=self.request.user) 
+        
+        bookmark = get_object_or_404(Bookmark,novel__slug =  pk) 
         return Response(BookmarkSerializer(bookmark).data)
     def destroy(self,request, pk):
-        bookmark = get_object_or_404(Bookmark,novel__slug =  pk
-                    , profile__user=self.request.user) 
+        bookmark = get_object_or_404(Bookmark,novel__slug =  pk) 
         profile = Profile.objects.get(user = request.user)
         profile.reading_lists.remove(bookmark)
         bookmark.delete()

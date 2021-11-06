@@ -379,11 +379,7 @@ class Crawler(ABC):
     def extract_contents(self, tag) -> str:
         self.clean_contents(tag)
         body = ''.join(self.__extract_contents(tag))
-        
-        body = re.sub("Read latest.*? at .*?\n","Read new chapters at wuxiaworld.eu",body, re.MULTILINE)
-        body = re.sub("Translator\s*?:\s*?\n|Editor\s*?:\s*?\n|AtlasStudios\s*?:\s*?\n|Previous Chapter|Next Chapter",
-                "",body, re.MULTILINE)
-        
+                
         return '\n'.join([
             # '<p>' + x + '</p>'
             x
