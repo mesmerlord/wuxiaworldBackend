@@ -33,15 +33,12 @@ class ReadNovelFullCrawler(Crawler):
 
     def read_novel_info(self):
         '''Get novel title, autor, cover etc'''
-        logger.debug('Visiting %s', self.novel_url)
         soup = self.get_soup(self.novel_url + '?waring=1')
 
         self.novel_title = soup.select_one('h3.title').text.strip()
-        logger.info('Novel title: %s', self.novel_title)
 
         self.novel_cover = self.absolute_url(
             soup.select_one('div.book img')['src'])
-        logger.info('Novel cover: %s', self.novel_cover)
 
         author = []
         for a in soup.select('ul.info.info-meta li')[1].select('a'):
@@ -50,12 +47,10 @@ class ReadNovelFullCrawler(Crawler):
 
         self.novel_author = ", ".join(author)
 
-        logger.info('Novel author: %s', self.novel_author)
 
         novel_id = soup.select_one('div#rating')['data-novel-id']
 
         chapter_url = full_chapter_url % novel_id
-        logger.debug('Visiting %s', chapter_url)
 
         chapter_soup = self.get_soup(chapter_url)
         chapters = chapter_soup.select('li a')
@@ -75,7 +70,7 @@ class ReadNovelFullCrawler(Crawler):
                     'title': vol_title,
                 })
             # end if
-            url = a["href"]
+            url = x["href"]
             if "readnovel" not in url:
                 url = f"https://readnovelfull.com{url}"
             self.chapters.append({
@@ -89,9 +84,8 @@ class ReadNovelFullCrawler(Crawler):
 
     def download_chapter_body(self, chapter):
         '''Download body of a single chapter and return as clean html format.'''
-        logger.info('Downloading %s', chapter['url'])
         soup = self.get_soup(chapter['url'])
         content = soup.select_one('#chr-content')
-        return self.extract_contents(content)
+        return {'chapter':chapter,'body':self.extract_contents(content)}
     # end def
 # end class

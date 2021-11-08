@@ -15,6 +15,7 @@ from .sources.wuxiasite import WuxiaSiteCrawler
 from .sources.readnovelfull import ReadNovelFullCrawler
 from .sources.vipnovel import VipNovel
 from .sources.wuxiaco import WuxiaCoCrawler
+import traceback
 
 import os
 import logging
@@ -77,7 +78,7 @@ def add_chapter(chapter, queriedNovel):
 def initial_scrape(scrapeLink) -> dict:
     Novel = apps.get_model("novels", "Novel")
     queriedNovel = Novel.objects.get(scrapeLink = scrapeLink)
-    result = {}
+    resultData = {}
     error = {}
     scraper = None
     try:
@@ -90,7 +91,7 @@ def initial_scrape(scrapeLink) -> dict:
         for result in results:
             add_chapter(result, queriedNovel)
         
-        result = {'data':f"{len(scraper.chapters)} chapters downloaded for {queriedNovel.name}"}
+        resultData = {'data':f"{len(scraper.chapters)} chapters downloaded for {queriedNovel.name}"}
         queriedNovel.repeatScrape = True
         queriedNovel.save()
 
@@ -119,7 +120,7 @@ def initial_scrape(scrapeLink) -> dict:
         )
     if scraper:
         scraper.destroy()
-    return {'result':result,'error':error}
+    return {'result':resultData,'error':error}
 
 @shared_task
 def continous_scrape(scrapeLink):
@@ -127,7 +128,7 @@ def continous_scrape(scrapeLink):
     Chapter = apps.get_model("novels", "Chapter")
     queriedNovel = Novel.objects.get(scrapeLink = scrapeLink)
     scraper = None
-    result = {}
+    resultData = {}
     error = {}
     try:
         if not queriedNovel.repeatScrape:
@@ -151,7 +152,7 @@ def continous_scrape(scrapeLink):
         results = scraper.executor.map(scraper.download_chapter_body,toScrape)
         for result in results:
             add_chapter(result,queriedNovel)
-        result = {'data':f"{len(scraper.chapters)} chapters downloaded for {queriedNovel.name}"}
+        resultData = {'data':f"{len(toScrape)} chapters downloaded for {queriedNovel.name}"}
         
     except requests.exceptions.SSLError:
         error = {'error':"SSL Error"}
@@ -160,12 +161,13 @@ def continous_scrape(scrapeLink):
         error = {'error':"Connection Error"}
         logger.error(f"Novel {queriedNovel.name} failed due to : Proxy error. Will restart later")
     except Exception as e:
-        error = {'error':f"{e}"}
         logger.error(f"Novel {queriedNovel.name} failed due to : {e}")
+        tb = traceback.format_exc()
         stop_repeat_scrape(queriedNovel)
+        error = {'error':f"{tb}"}
     if scraper:
         scraper.destroy()
-    return {'result':result,'error':error}
+    return {'resultData':resultData,'error':error}
     
 #Reset Views
 @shared_task
