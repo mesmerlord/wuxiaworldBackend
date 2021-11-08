@@ -48,7 +48,19 @@ class VipNovel(Crawler):
 
         response = self.submit_form(self.novel_url.strip('/') + '/ajax/chapters')
         soup = self.make_soup(response)
-        for a in reversed(soup.select(".wp-manga-chapter a")):
+        chapters = soup.select(".wp-manga-chapter a")
+        if not chapters:
+            newChapLink = f"{self.novel_url}ajax/chapters/"
+            soup = self.make_soup(self.submit_form(
+            newChapLink,
+            
+            headers = {
+                'origin': 'https://vipnovel.com',
+                'user-agent':' Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36'
+            }
+            ))
+            chapters = soup.select('li.wp-manga-chapter a')
+        for a in reversed(chapters):
             chap_id = len(self.chapters) + 1
             vol_id = 1 + len(self.chapters) // 100
             if chap_id % 100 == 1:
