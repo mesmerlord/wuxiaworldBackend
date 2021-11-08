@@ -66,12 +66,14 @@ class VipNovel(Crawler):
             if chap_id % 100 == 1:
                 self.volumes.append({"id": vol_id})
             # end if
+            url = a["href"]
+            
             self.chapters.append(
                 {
                     "id": chap_id,
                     "volume": vol_id,
                     "title": a.text.strip(),
-                    "url": self.absolute_url(a["href"]),
+                    "url": url,
                 }
             )
         # end for
