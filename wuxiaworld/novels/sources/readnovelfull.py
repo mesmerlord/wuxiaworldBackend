@@ -75,10 +75,13 @@ class ReadNovelFullCrawler(Crawler):
                     'title': vol_title,
                 })
             # end if
+            url = a["href"]
+            if "readnovel" not in url:
+                url = f"https://readnovelfull.com{url}"
             self.chapters.append({
                 'id': chap_id,
                 'volume': vol_id,
-                'url': self.absolute_url(x['href']),
+                'url': url,
                 'title': x['title'] or ('Chapter %d' % chap_id),
             })
         # end for
