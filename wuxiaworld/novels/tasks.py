@@ -23,6 +23,7 @@ from django.conf import settings
 from django.db.models.functions import Replace
 from django.db.models import Value, F, Func
 from django.db import models 
+import re
 
 logger = logging.getLogger("sentry_sdk")
 

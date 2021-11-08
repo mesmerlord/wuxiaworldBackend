@@ -30,9 +30,8 @@ urlpatterns += [
     path('rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
     
 ]
-if not settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += [re_path(r'^.*$', TemplateView.as_view(template_name="index.html"))]
+# if not settings.DEBUG:
+#     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 if settings.DEBUG:
 
