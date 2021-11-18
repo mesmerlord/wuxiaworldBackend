@@ -55,7 +55,7 @@ class ChaptersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chapter
-        fields = ('index','title',"novSlugChapSlug",'timeAdded')
+        fields = ('index','title',"novSlugChapSlug",'date_created')
     def get_time(self,obj):
         chapAddedTime = obj.dateAdded
         dayAgo = now() + timedelta(hours = -24)
@@ -81,7 +81,7 @@ class NovelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Novel
         # fields = ('category','name', 'image','slug','author','description','views_set',)
-        exclude = ('viewsNovelName', 'scrapeLink','sources','repeatScrape')
+        exclude = ('viewsNovelName', 'scrapeLink','repeatScrape')
         # fields = '__all__'
     def get_chapters(self,obj):
         chapter = Chapter.objects.filter(novelParent = obj)
@@ -133,7 +133,7 @@ class BookmarkSerializer(serializers.ModelSerializer):
     novelInfo = NovelInfoSerializer(source = "novel")
     class Meta:
         model = Bookmark
-        fields = ("last_read","last_chapter", "next_chapter", "dateAdded", "id", "novelInfo")
+        fields = ("last_read","last_chapter", "next_chapter", "created_at", "id", "novelInfo")
 
     def get_last_read(self,obj):
         if obj.chapter:
