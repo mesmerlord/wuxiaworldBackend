@@ -76,10 +76,12 @@ THIRD_PARTY_APPS = [
     'allauth.socialaccount.providers.twitter',
     'allauth.socialaccount.providers.google',
     'dj_rest_auth',
+    'django_filters'
 ]
 
 LOCAL_APPS = [
-    "wuxiaworld.novels"
+    "wuxiaworld.novels",
+    "wuxiaworld.scraper"
     # Your stuff: custom apps go here
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
