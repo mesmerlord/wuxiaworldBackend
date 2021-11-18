@@ -55,9 +55,9 @@ class ChaptersSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chapter
-        fields = ('index','title',"novSlugChapSlug",'date_created')
+        fields = ('index','title',"novSlugChapSlug",'timeAdded')
     def get_time(self,obj):
-        chapAddedTime = obj.dateAdded
+        chapAddedTime = obj.created_at
         dayAgo = now() + timedelta(hours = -24)
         if chapAddedTime < dayAgo:
             return chapAddedTime.strftime('%B %-d %Y')
@@ -81,7 +81,7 @@ class NovelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Novel
         # fields = ('category','name', 'image','slug','author','description','views_set',)
-        exclude = ('viewsNovelName', 'scrapeLink','repeatScrape')
+        exclude = ('viewsNovelName','repeatScrape')
         # fields = '__all__'
     def get_chapters(self,obj):
         chapter = Chapter.objects.filter(novelParent = obj)
