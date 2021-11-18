@@ -11,14 +11,14 @@ def repeat_scrape_off(modeladmin, request, queryset):
 # Register your models here.
 @admin.register(Novel)
 class NovelAdmin(admin.ModelAdmin):
-    list_display = ["name", "repeatScrape", "dateAdded"]
+    list_display = ["name", "repeatScrape", "created_at", "updated_at"]
     actions = [repeat_scrape_on,repeat_scrape_off]
-    list_filter = ("sources", "repeatScrape",)
+    list_filter = ("source__base_url", "repeatScrape",)
     search_fields = ['name']
 
 @admin.register(Chapter)
 class ChapterAdmin(admin.ModelAdmin):
-    list_display = ["index", "novelParent", "dateAdded"]
+    list_display = ["index", "novelParent", "created_at", "updated_at"]
     search_fields = ['novelParent__name']
 
 @admin.register(NovelViews)
@@ -29,7 +29,7 @@ class NovelViewsAdmin(admin.ModelAdmin):
             return (queriedNovel.first().name)
         else:
             return obj.viewsNovelName
-    list_display = ['views_name', "views" ]
+    list_display = ['views_name', "views", "created_at", "updated_at" ]
     search_fields = ['viewsNovelName']
 
 

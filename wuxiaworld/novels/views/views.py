@@ -1,22 +1,19 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Novel, Author, Category, Chapter, NovelViews, Profile, Tag, Bookmark, Settings
-from .serializers import (NovelSerializer, CategorySerializer,
+from ..models import Novel, Author, Category, Chapter, NovelViews, Profile, Tag, Bookmark, Settings
+from ..serializers import (NovelSerializer, CategorySerializer,
                         AuthorSerializer,ChaptersSerializer,ChapterSerializer,NovelInfoSerializer,
                         SearchSerializer, ProfileSerializer,TagSerializer, BookmarkSerializer,
                         SettingsSerializer)
 from rest_framework import viewsets, status, filters, pagination
 from rest_framework.response import Response
 from django.http import HttpResponse
-from rest_framework.pagination import LimitOffsetPagination
 from django.http import Http404
-from .tasks import initial_scrape, continous_scrape, add_novels
-from .utils import delete_dupes, delete_unordered_chapters
+from ..tasks import  add_novels, add_sources
+from ..utils import delete_dupes, delete_unordered_chapters
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
-from .permissions import *
-from datetime import datetime
+from ..permissions import *
 from rest_framework.decorators import action
-from django.conf import settings
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
@@ -183,6 +180,10 @@ class SettingsSerializerView(viewsets.ModelViewSet):
 
 def addNovels(request):
     add_novels.delay()
+    return HttpResponse("<li>Done</li>")
+
+def addSources(request):
+    add_sources.delay()
     return HttpResponse("<li>Done</li>")
 
 def deleteDuplicate(request):

@@ -1,7 +1,7 @@
 from django.conf import settings
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
-from .views import (NovelSerializerView, CategorySerializerView, 
+from .views.views import (NovelSerializerView, CategorySerializerView, 
                 AuthorSerializerView, ChaptersSerializerView,SingleChapterSerializerView,
                 SearchSerializerView, ProfileSerializerView, TagSerializerView, 
                 BookmarkSerializerView, SettingsSerializerView )

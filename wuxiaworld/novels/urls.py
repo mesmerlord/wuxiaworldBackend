@@ -5,8 +5,9 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path,re_path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
-from wuxiaworld.novels.views import (deleteDuplicate, deleteUnordered, addNovels,siteMap)
-from wuxiaworld.novels.views import (GoogleLogin)
+from wuxiaworld.novels.views.views import (deleteDuplicate, deleteUnordered, addNovels,siteMap,
+            addSources)
+from wuxiaworld.novels.views.views import (GoogleLogin)
 
 urlpatterns = [
     # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -23,6 +24,7 @@ urlpatterns += [
     path("api/", include("wuxiaworld.novels.api_router")),
     # DRF auth token
     path("upload/novels", addNovels),
+    path("upload/sources", addSources),
     path("utils/deleteDupe", deleteDuplicate),
     path("utils/deleteUnordered", deleteUnordered),
     path("utils/sitemap/<site>", siteMap),

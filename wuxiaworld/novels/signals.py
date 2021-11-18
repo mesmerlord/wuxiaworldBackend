@@ -2,20 +2,27 @@ from django.db.models.signals import post_delete, pre_save,post_save, post_delet
 from django.dispatch import receiver
 from django.apps import apps
 from django.utils.text import slugify
-from .tasks import initial_scrape
-import pytz
-import json
-from datetime import datetime,timedelta
 from django_celery_beat.models import IntervalSchedule, PeriodicTask
-from allauth.socialaccount.signals import pre_social_login
 from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount
+import json
+from wuxiaworld.scraper.tasks import continous_scrape
 
 #If Novel has a scrape link, start the initial scrape of the novel and create
 # a periodic task to scrape every x interval.
 def create_periodic_task(instance):
-    if instance.scrapeLink:
-            initial_scrape.delay(instance.scrapeLink)
+    if instance.repeatScrape:
+        schedule, _ = IntervalSchedule.objects.get_or_create(
+                    every = 3,
+                    period = IntervalSchedule.HOURS
+                    )
+        task, _ = PeriodicTask.objects.get_or_create(
+        interval=schedule, 
+        name=instance.name,
+        task='wuxiaworld.scraper.tasks.continous_scrape',
+        args = json.dumps([instance.slug]),
+        )
+
 @receiver(post_delete, sender="novels.Profile")
 def create_profile(sender, instance, created, **kwargs):
     settings = instance.settings

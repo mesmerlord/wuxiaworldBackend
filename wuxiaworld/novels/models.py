@@ -7,7 +7,13 @@ from django.db.models import F
 from django.contrib.auth.models import User
 
 
-class Author(models.Model):
+class BaseModel(models.Model):
+    created_at = models.DateTimeField(auto_now_add= True)
+    updated_at = models.DateTimeField(auto_now= True)
+    class Meta:
+        abstract = True
+
+class Author(BaseModel):
     name = models.CharField(max_length = 200)
     slug = models.SlugField(max_length = 200, primary_key=True)
     def __str__(self):
@@ -17,7 +23,7 @@ class Author(models.Model):
             self.slug = slugify(self.name)
         super(Author, self).save(*args, **kwargs)
 
-class Category(models.Model):
+class Category(BaseModel):
     #Also used for language instead of creating a new model
     name = models.CharField(max_length = 200, unique=True)
     slug = models.CharField(max_length = 200, blank = True)
@@ -28,7 +34,7 @@ class Category(models.Model):
             self.slug = slugify(self.name)
         super(Category, self).save(*args, **kwargs)
 
-class Tag(models.Model):
+class Tag(BaseModel):
     name = models.CharField(max_length = 200, unique = True)
     slug = models.CharField(max_length = 200, blank = True)
     def __str__(self):
@@ -38,7 +44,7 @@ class Tag(models.Model):
             self.slug = slugify(self.name)
         super(Tag, self).save(*args, **kwargs)
 
-class NovelViews(models.Model):
+class NovelViews(BaseModel):
     viewsNovelName = models.SlugField(max_length = 200, default = "",unique = True)
     views = models.IntegerField(default = 0)
     weeklyViews = models.IntegerField(default=0)
@@ -57,15 +63,7 @@ class NovelViews(models.Model):
                     monthlyViews = F('monthlyViews')+1 ,
                     yearlyViews = F('yearlyViews')+1)
         
-class Novel(models.Model):
-    SOURCE_CHOICES = [
-        ('WuxSite', 'WuxSite'),
-        ('ReadNovelFull', 'ReadNovelFull'),
-        ('NovelFull', 'NovelFull'),
-        ('WuxiaCo', 'WuxiaCo'),
-        ('VipNovel', 'VipNovel'),
-    ]
-
+class Novel(BaseModel):
     name = models.CharField(max_length = 200)
     image = models.URLField(blank = True)
     imageThumb = models.URLField(blank = True)
@@ -76,25 +74,19 @@ class Novel(models.Model):
     description = models.TextField(blank = True)
     slug = models.SlugField(primary_key = True, default = None, max_length=200, blank = True, unique = True)
     numOfChaps = models.IntegerField(default = 0)
-    numOfTranslatedChaps = models.IntegerField(default = 0)
     novelStatus = models.BooleanField(default = True) #True will be for Ongoing, False for Completed
     viewsNovelName = models.ForeignKey(NovelViews,on_delete= models.CASCADE, blank=True, null=True)
-    scrapeLink = models.CharField(max_length = 200,blank = True, default = "")
     repeatScrape = models.BooleanField(default = False)
-    novelRef = models.CharField(max_length = 50, default = "", blank = True )
-    sources = models.CharField(max_length = 100,choices=SOURCE_CHOICES,default = 'WuxSite')
-    dateAdded = models.DateTimeField(default=now)
     def __str__(self):
         return self.name
 
 
-class Chapter(models.Model):
+class Chapter(BaseModel):
     index = models.IntegerField(default = None, blank = True)
     text = models.TextField(max_length=None)
     title = models.TextField(max_length = 200)
     novelParent = models.ForeignKey(Novel, on_delete = models.CASCADE, verbose_name = "chapter")
     novSlugChapSlug = models.CharField( max_length = 200, blank = True, default = None)
-    dateAdded = models.DateTimeField(default=now)
     scrapeLink = models.CharField(max_length = 200, blank = False)
     def save(self, *args, **kwargs):
         if not self.index:
@@ -106,31 +98,28 @@ class Chapter(models.Model):
     def __str__(self):
         return f"Chapter {self.index} - {self.novelParent}"
 
-class Bookmark(models.Model):
-    dateAdded = models.DateTimeField(default=now)
+class Bookmark(BaseModel):
     novel = models.ForeignKey(Novel, on_delete = models.CASCADE)
     chapter = models.ForeignKey(Chapter, on_delete = models.CASCADE, null=True)
 
     def __str__(self):
         return self.novel.name
 
-class Settings(models.Model):
+class Settings(BaseModel):
     fontSize = models.IntegerField(default = 16)
     autoBookMark = models.BooleanField(default = False)
     lowData = models.BooleanField(default = False)
     darkMode = models.BooleanField(default = False)
 
     
-class Profile(models.Model):
+class Profile(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     imageUrl = models.URLField(blank = True)
     reading_lists = models.ManyToManyField(Bookmark,null = True, blank = True)
-    dateAdded = models.DateTimeField(default=now)
     settings = models.OneToOneField(Settings, on_delete = models.DO_NOTHING,
                          null=True, default = None, blank = True)
 
-class BlacklistPattern(models.Model):
-    dateAdded = models.DateTimeField(default=now)
+class BlacklistPattern(BaseModel):
     pattern = models.TextField(max_length = 100,blank = True, null = True)
     enabled = models.BooleanField(default = True)
     replacement = models.TextField(max_length = 100,blank = True, null = True,
