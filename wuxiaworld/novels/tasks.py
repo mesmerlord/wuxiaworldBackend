@@ -83,7 +83,10 @@ def add_sources():
 
     for novel in data:
         # print(novel)
-        queriedNovel = Novel.objects.get(name = novel)
+        try:
+            queriedNovel = Novel.objects.get(name = novel)
+        except:
+            continue
         for num, source in enumerate(data[novel][::-1]):
             try:
                 base_url = urlparse(source[1]).netloc
