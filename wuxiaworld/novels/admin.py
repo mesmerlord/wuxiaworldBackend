@@ -13,7 +13,7 @@ def repeat_scrape_off(modeladmin, request, queryset):
 class NovelAdmin(admin.ModelAdmin):
     list_display = ["name", "repeatScrape", "created_at", "updated_at"]
     actions = [repeat_scrape_on,repeat_scrape_off]
-    list_filter = ("source__base_url", "repeatScrape",)
+    list_filter = ("source_novel__base_url", "repeatScrape",)
     search_fields = ['name']
 
 @admin.register(Chapter)
