@@ -23,14 +23,13 @@ jobs:
           host: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
-      - name: Run multi-line scripts
-        run: |
-          echo "Pulling latest prod code"
-          cd /root/folder/wuxiaworldBackend
-          git pull origin main
-          docker-compose -f production.yml down
-          echo "Stopping previous containers"
-          docker-compose -f production.yml up --build -d
-          echo "Building current stack"
-          docker-compose -f production.yml run --rm django python manage.py migrate
-          echo "Finished migrating latest migrations"
+          script: |
+            echo "Pulling latest prod code"
+            cd /root/folder/wuxiaworldBackend
+            git pull origin main
+            docker-compose -f production.yml down
+            echo "Stopping previous containers"
+            docker-compose -f production.yml up --build -d
+            echo "Building current stack"
+            docker-compose -f production.yml run --rm django python manage.py migrate
+            echo "Finished migrating latest migrations"
