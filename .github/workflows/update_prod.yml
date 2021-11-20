@@ -23,6 +23,7 @@ jobs:
           host: ${{ secrets.HOST }}
           USERNAME: ${{ secrets.USERNAME }}
           PASSWORD: ${{ secrets.PASSWORD }}
+      - name: Run multi-line scripts
         run: |
           echo "Pulling latest prod code"
           cd /root/folder/wuxiaworldBackend
