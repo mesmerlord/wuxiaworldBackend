@@ -1,0 +1,35 @@
+name: Update Production
+
+on:
+  # opening a pull request to main and develop branch will be a trigger
+  pull_request:
+    branches:
+      - main
+  # any code pushed to main and develop branch will also be a trigger
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    
+      - name: Executing remote command
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          run: |
+            echo "Pulling latest prod code"
+            cd /root/folder/wuxiaworldBackend
+            git pull origin main
+            docker-compose -f production.yml down
+            echo "Stopping previous containers"
+            docker-compose -f production.yml up --build -d
+            echo "Building current stack"
+            docker-compose -f production.yml run --rm django python manage.py migrate
+            echo "Finished migrating latest migrations"
