@@ -7,18 +7,10 @@ import pandas as pd
 from django.utils.text import slugify
 import json
 from os import listdir
-from celery.task import periodic_task 
-from celery.schedules import crontab
 from urllib.parse import urlparse
 
-import os
 import logging
-from django_celery_beat.models import IntervalSchedule, PeriodicTask
-from django.conf import settings
-from django.db.models.functions import Replace
-from django.db.models import Value, F, Func
-from django.db import models 
-import re
+from wuxiaworld.novels.utils import delete_dupes, delete_unordered_chapters
 
 logger = logging.getLogger("sentry_sdk")
 
