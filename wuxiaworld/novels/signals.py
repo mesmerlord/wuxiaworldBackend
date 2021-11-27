@@ -7,6 +7,9 @@ from django.contrib.auth.models import User
 from allauth.socialaccount.models import SocialAccount
 import json
 from wuxiaworld.scraper.tasks import continous_scrape
+from django.utils.timezone import now
+from django.db.models import Avg
+from django.db.models.functions import Round
 
 #If Novel has a scrape link, start the initial scrape of the novel and create
 # a periodic task to scrape every x interval.
@@ -31,23 +34,41 @@ def create_profile(sender, instance, created, **kwargs):
      
 @receiver(post_delete, sender="novels.Novel")
 def clear_views(sender,instance, **kwargs):
-    novelView = instance.viewsNovelName
+    novelView = instance.views
     if novelView:
         novelView.delete()
     novelTask = PeriodicTask.objects.filter(name = instance.name)
     if novelTask:
         novelTask.delete()
-    
+
+@receiver(post_save, sender="novels.Chapter")
+def update_novel_last_chapter(sender, instance, created, **kwargs):
+    if created:
+        novel_obj = instance.novelParent
+        novel_obj.last_chap_updated = now()
+        novel_obj.save()
+
+@receiver(post_save, sender="novels.Review")
+def update_novel_last_chapter(sender, instance, created, **kwargs):
+    Review = apps.get_model("novels", "Review")
+    novel_obj = instance.novel
+
+    all_reviews = Review.objects.filter(novel = novel_obj)
+    if all_reviews.count():
+        avg_rating = all_reviews.aggregate(score = Avg('total_score'))
+        novel_obj.rating = round(avg_rating['score'], 2)
+        novel_obj.save()
+
 @receiver(pre_save,sender = "novels.Novel")
 def novel_check(sender,instance,**kwargs):
     
     if not instance.slug:
         newSlug = slugify(instance.name)
         instance.slug = newSlug
-    if not instance.viewsNovelName:
+    if not instance.views:
         NovelViews = apps.get_model('novels','NovelViews')
         novelView, _ = NovelViews.objects.get_or_create(viewsNovelName = instance.slug)
-        instance.viewsNovelName = novelView
+        instance.views = novelView
 
     if not instance.category:
         Category = apps.get_model('novels','Category')

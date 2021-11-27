@@ -2,6 +2,7 @@ To do:
 Priority, story points, description
 1 -- 5 Story: Change frontpage cards to sliders with sections for each category
 1 -- 8 Story: Add new version of API to seperate api views
+1 -- 3 Story: Add api gateway to trigger manual run of periodic task, accessible by admin only
 1 -- 5 Story: Add new model Reviews with foreign key relation on novels for points, foreign
 key to profile. Use basemodel, fields: title(100 chars), description(max 1000 chars),
 id(alphanumeric, unique), total score, chapter last read(foreign key to chapter), Translation Quality score, Plot score, Characters design score

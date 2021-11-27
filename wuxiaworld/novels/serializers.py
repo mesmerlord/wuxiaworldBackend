@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Novel,Category,Author,Chapter, NovelViews, Tag, Profile, Bookmark, Settings
+from .models import Novel,Category,Author,Chapter, NovelViews, Review, Tag, Profile, Bookmark, Settings
 from rest_framework.pagination import PageNumberPagination
 from django.utils.timezone import now
 from datetime import timedelta
@@ -9,12 +9,12 @@ from django.contrib.auth.models import User
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = "__all__"
+        exclude = ('created_at','updated_at', "id")
        
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = "__all__"
+        exclude = ('created_at','updated_at')
        
 class ChapterSerializer(serializers.ModelSerializer):
     novelParentName = serializers.CharField(source='novelParent.name')
@@ -74,18 +74,20 @@ class NovelViewsSerializer(serializers.ModelSerializer):
 class NovelSerializer(serializers.ModelSerializer):
     author = AuthorSerializer()
     category = CategorySerializer(many= True)
-    views = serializers.CharField(source = "viewsNovelName.views")    
+    views = serializers.CharField(source = "views.views")    
     tag = TagSerializer(many= True)
     chapters = serializers.SerializerMethodField(method_name = "get_chapters")
+    review_count = serializers.IntegerField()    
 
     class Meta:
         model = Novel
         # fields = ('category','name', 'image','slug','author','description','views_set',)
-        exclude = ('viewsNovelName','repeatScrape')
+        exclude = ('repeatScrape',)
         # fields = '__all__'
     def get_chapters(self,obj):
         chapter = Chapter.objects.filter(novelParent = obj)
         return chapter.count()
+    
 
 class NovelInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -165,3 +167,31 @@ class BookmarkSerializer(serializers.ModelSerializer):
             return ChaptersSerializer(lastChapter).data
         else:
             return None
+
+class HomeNovelSerializer(serializers.ModelSerializer):
+    views = serializers.CharField(source = "human_views")
+    chapters = serializers.CharField(source = "chapter_count")
+
+    class Meta:
+        model = Novel
+        fields = ('name', 'image','slug','description', "rating", "ranking", "views", "chapters")
+    
+
+class HomeSerializer(serializers.ModelSerializer):
+    # views_count = serializers.CharField()
+    novels = serializers.SerializerMethodField(source = "get_novels")
+
+    class Meta:
+        model = Category
+        exclude = ('created_at','updated_at', "id")
+    def get_novels(self,obj):
+        novels = Novel.objects.filter(category = obj).order_by("-views__views")[:8]
+        return HomeNovelSerializer(novels, many = True).data
+
+class LatestChapterSerializer(serializers.ModelSerializer):
+    novel_name = serializers.CharField(source = "novelParent.name")
+    novel_thumb = serializers.CharField(source = "novelParent.imageThumb")
+    created_at = serializers.CharField(source = "get_human_time")
+    class Meta:
+        model = Chapter
+        exclude = ("text",'updated_at', "id","scrapeLink")

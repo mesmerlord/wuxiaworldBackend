@@ -5,7 +5,8 @@ from .views.views import (NovelSerializerView, CategorySerializerView,
                 AuthorSerializerView, ChaptersSerializerView,SingleChapterSerializerView,
                 SearchSerializerView, ProfileSerializerView, TagSerializerView, 
                 BookmarkSerializerView, SettingsSerializerView )
-
+from wuxiaworld.novels.views.home_views import (HomeSerializerView, LatestChaptersSerializerView)
+from django.urls import include, path,re_path
 
 if settings.DEBUG:
     router = DefaultRouter()
@@ -25,3 +26,8 @@ router.register('settings', SettingsSerializerView)
 
 app_name = "api"
 urlpatterns = router.urls
+urlpatterns += [
+    path('home_view/', HomeSerializerView.as_view()),
+    path('latest_chapters/', LatestChaptersSerializerView.as_view()),
+            
+            ]

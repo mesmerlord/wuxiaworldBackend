@@ -5,7 +5,9 @@ from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.http import Http404
-
+from rest_framework_extensions.cache.decorators import (
+    cache_response
+)
 
 class SingleChapterSerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]

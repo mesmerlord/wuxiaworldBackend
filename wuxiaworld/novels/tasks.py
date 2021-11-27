@@ -60,7 +60,7 @@ def new_novel(x):
         print(e)
 @shared_task
 def add_novels():
-    df = pd.read_csv(f'both.csv').astype(str)
+    df = pd.read_csv(f'both.csv', keep_default_na=False).astype(str)
     df.applymap(lambda x: "" if len(x)>199 else x)
     for _ , x in df.iterrows():
         new_novel.delay(x.to_dict())

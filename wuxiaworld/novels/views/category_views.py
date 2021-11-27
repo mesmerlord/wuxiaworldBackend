@@ -6,12 +6,18 @@ from rest_framework.response import Response
 from rest_framework import viewsets
 from wuxiaworld.novels.permissions import ReadOnly
 from rest_framework.pagination import LimitOffsetPagination
+from wuxiaworld.novels.views.cache_utils import DefaultKeyConstructor
+from rest_framework_extensions.cache.decorators import (
+    cache_response
+)
 
 class CategorySerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     pagination_classes = LimitOffsetPagination
+
+    @cache_response(key_func = DefaultKeyConstructor(), timeout = 60 * 15)
 
     def retrieve(self, request, pk = None):
         category = get_object_or_404(Category,slug = pk)
@@ -27,6 +33,8 @@ class TagSerializerView(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_classes = LimitOffsetPagination
+
+    @cache_response(key_func = DefaultKeyConstructor(), timeout = 60 * 15)
     def retrieve(self, request, pk = None):
         tag = get_object_or_404(Tag,slug = pk)
         queryset = Novel.objects.filter(tag = tag)
