@@ -174,7 +174,8 @@ class HomeNovelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Novel
-        fields = ('name', 'image','slug','description', "rating", "ranking", "views", "chapters")
+        fields = ('name', 'image','slug','description', "rating", "ranking", "views", "chapters",
+        "imageThumb")
     
 
 class HomeSerializer(serializers.ModelSerializer):
