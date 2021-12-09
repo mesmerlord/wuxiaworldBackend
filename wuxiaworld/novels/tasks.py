@@ -1,24 +1,17 @@
 from celery import shared_task
-# from .models import Category, Author, Novel, Chapter,NovelViews
 from django.apps import apps
-from datetime import datetime, date, timedelta
 import requests 
 import pandas as pd
 from django.utils.text import slugify
 import json
 from os import listdir
-from celery.task import periodic_task 
-from celery.schedules import crontab
 from urllib.parse import urlparse
-
+from os.path import join
 import os
 import logging
-from django_celery_beat.models import IntervalSchedule, PeriodicTask
+from wuxiaworld.novels.utils import delete_dupes, delete_unordered_chapters
 from django.conf import settings
-from django.db.models.functions import Replace
-from django.db.models import Value, F, Func
-from django.db import models 
-import re
+
 
 logger = logging.getLogger("sentry_sdk")
 
@@ -68,7 +61,7 @@ def new_novel(x):
         print(e)
 @shared_task
 def add_novels():
-    df = pd.read_csv(f'both.csv').astype(str)
+    df = pd.read_csv(f'both.csv', keep_default_na=False).astype(str)
     df.applymap(lambda x: "" if len(x)>199 else x)
     for _ , x in df.iterrows():
         new_novel.delay(x.to_dict())
@@ -119,3 +112,19 @@ def reset_yearly_views():
     NovelViews = apps.get_model('novels', 'NovelViews')
     novels = NovelViews.objects.all()
     novels.update(yearlyViews = 0)
+
+def check_if_image_in_media(image_file):
+    path_to_media = join(settings.MEDIA_ROOT, 'novel_images')
+    if not os.path.exists(path_to_media):
+        os.makedirs(path_to_media)
+    list_of_images = os.listdir(path_to_media)
+    if image_file in list_of_images:
+        return True
+    else:
+        return False
+
+@shared_task()
+def download_images():
+    NovelViews = apps.get_model('novels', 'NovelViews')
+    novels = NovelViews.objects.all()
+    

@@ -7,7 +7,7 @@ from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from wuxiaworld.novels.views.views import (deleteDuplicate, deleteUnordered, addNovels,siteMap,
             addSources)
-from wuxiaworld.novels.views.views import (GoogleLogin)
+from wuxiaworld.novels.views.views import (GoogleLogin, FacebookLogin)
 
 urlpatterns = [
     # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -30,7 +30,7 @@ urlpatterns += [
     path("utils/sitemap/<site>", siteMap),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
     path('rest-auth/google/', GoogleLogin.as_view(), name='google_login'),
-    
+    path('rest-auth/facebook/', FacebookLogin.as_view(), name='fb_login')
 ]
 # if not settings.DEBUG:
 #     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

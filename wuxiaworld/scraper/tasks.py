@@ -45,6 +45,7 @@ def add_chapter(chapter, queriedNovel):
             })
 
 def perform_scrape(scrapeLink, queriedNovel):
+    downloaded_chapters = []
     scraper = create_scraper(scrapeLink)
     Chapter = apps.get_model("novels", "Chapter")
     novel_chapters = Chapter.objects.filter(novelParent = queriedNovel)
@@ -74,6 +75,7 @@ def perform_scrape(scrapeLink, queriedNovel):
                 result = {'body':temp_result,'chapter':{'id':chapter['id'],'title':chapter['title'],
                 'url':chapter['url'] } }
                 add_chapter(result,queriedNovel)
+                downloaded_chapters.append({"chapter":chapter})
 
         except (TypeError, requests.exceptions.SSLError,
             urllib3.exceptions.MaxRetryError, requests.exceptions.ConnectionError,
@@ -82,7 +84,8 @@ def perform_scrape(scrapeLink, queriedNovel):
             pass
     if scraper:
         scraper.destroy()
-    resultData = {'data':f"{len(toScrape)} chapters downloaded for {queriedNovel.name}"}
+    resultData = {'data':f"{len(toScrape)} chapters downloaded for {queriedNovel.name}",
+            "detail":downloaded_chapters}
     return resultData
 
 @shared_task
