@@ -36,8 +36,8 @@ http:
         - web-secure
       middlewares:
         - csrf
-        - test-compress:
-          compress: {}
+        # - test-compress:
+        #   compress: {}
       service: django
       tls:
         # https://docs.traefik.io/master/routing/routers/#certresolver
