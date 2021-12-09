@@ -1,4 +1,5 @@
 from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
 from wuxiaworld.novels.tasks import (add_novels, add_sources, delete_dupes,
                      delete_unordered_chapters )
@@ -8,6 +9,9 @@ from ..models import Novel
 
 class GoogleLogin(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
+
+class FacebookLogin(SocialLoginView):
+    adapter_class = FacebookOAuth2Adapter
 
 def addNovels(request):
     add_novels.delay()

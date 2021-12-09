@@ -1,23 +1,21 @@
+In Progress:
+1 -- 3 Story: Add api gateway to trigger manual run of periodic task, accessible by admin only
+1 -- 8 Feature : Remove novelupdates cdn images and replace with novelImage and novelThumb 
+from Novel model and create periodic task to 
+1 -- 5 Feature: Change bookcards for categories page to new bookcard
+1 -- 5 Feature: Categories and pages should be paginated instead of infinite load
+2 -- 5 Feature: Add filters to categories and tags pages
+2 -- 5 Feature: Change bookcards for categories page to new bookcard
+2 -- 8 Feature: Add facebook social login (Mostly implemented)
+
 To do:
 Priority, story points, description
-1 -- 5 Story: Change frontpage cards to sliders with sections for each category
-1 -- 8 Story: Add new version of API to seperate api views
-1 -- 3 Story: Add api gateway to trigger manual run of periodic task, accessible by admin only
-1 -- 5 Story: Add new model Reviews with foreign key relation on novels for points, foreign
-key to profile. Use basemodel, fields: title(100 chars), description(max 1000 chars),
-id(alphanumeric, unique), total score, chapter last read(foreign key to chapter), Translation Quality score, Plot score, Characters design score
-1 -- 8 Feature: Add API views with filter options(by weekly, monthly views, number of chapters,
-name, date added, last chapter added, number of reviews, review score ) #Enable caching on some of these
-1 -- 2 Story: Add new model for points, foreign key to profile
+2 -- 2 Story: Add new model for points, foreign key to profile
 2 -- 8 Feature: Add functionality to let users suggest changes to chapter
 2 -- 8 Feature: Add functionality to let users suggest changes to novel
 2 -- 5 Feature: Add normal registration page, not just social login
-2 -- 8 Feature: Add facebook social login
 3 -- 5 Feature: Add functionality to let users suggest changes to tags and categories
-3 -- 13 Story: Add caching to APIs(novel list, chapter list, rankings)
 3 -- 13 Feature: Integrate Wellsaid into application to create real sounding voiceovers
-3 -- 20 Feature: Seperate models to own application for chapters, profiles and categories
-3 -- 3 Spike : Find way to host images on own CDN instead of relying on novelupdates cdn
 3 -- ?? Feature : Add payment options with stripe
 3 -- ?? Feature : Downloads of ongoing novels available to all members, completed novels
 only for paid users.
@@ -36,3 +34,17 @@ xx Add a check if all the previous scraped chap names and index are the same - I
 xx Add an expiry time to all celery tasks so no raceconditions happen
 xx Create Token auth for backend
 xx Change from crontab to schedule for celerybeat
+1 -- 5 Story: Add new model Reviews with foreign key relation on novels for points, foreign
+key to profile. Use basemodel, fields: title(100 chars), description(max 1000 chars),
+id(alphanumeric, unique), total score, chapter last read(foreign key to chapter), Translation Quality score, Plot score, Characters design score
+1 -- 8 Feature: Add API views with filter options(by weekly, monthly views, number of chapters,
+name, date added, last chapter added, number of reviews, review score ) #Enable caching on some of these
+3 -- 13 Story: Add caching to APIs(novel list, chapter list, rankings)
+
+Cancelled:
+
+3 -- 20 Feature: Seperate models to own application for chapters, profiles and categories -- Cancelled, not enough of a reason to do this other than
+just better app structure
+1 -- 8 Story: Add new version of API to seperate api views -- Workaround created different view files
+1 -- 5 Story: Change frontpage cards to sliders with sections for each category --Cancelled
+3 -- 3 Spike : Find way to host images on own server instead of relying on novelupdates cdn

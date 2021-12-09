@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Novel,Category,Author,Chapter, NovelViews, Review, Tag, Profile, Bookmark, Settings
+from .models import (Announcement, Novel,Category,Author,Chapter, NovelViews,
+                 Review, Tag, Profile, Bookmark, Settings, Review, Report )
 from rest_framework.pagination import PageNumberPagination
 from django.utils.timezone import now
 from datetime import timedelta
@@ -196,3 +197,29 @@ class LatestChapterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chapter
         exclude = ("text",'updated_at', "id","scrapeLink")
+    
+class AnnouncementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Announcement
+        fields = "__all__"
+
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
+        fields = "__all__"
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = "__all__"
+
+class CatOrTagSerializer(serializers.ModelSerializer):
+    views = serializers.CharField(source = "human_views")
+    chapters = serializers.CharField(source = "chapter_count")
+    category = CategorySerializer(many = True)
+    tag = TagSerializer(many = True)
+
+    class Meta:
+        model = Novel
+        fields = ('name', 'image','slug','description', "rating", "ranking", "views", "chapters",
+        "imageThumb", "category", "tag")

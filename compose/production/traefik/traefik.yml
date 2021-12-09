@@ -36,6 +36,8 @@ http:
         - web-secure
       middlewares:
         - csrf
+        test-compress:
+          compress: {}
       service: django
       tls:
         # https://docs.traefik.io/master/routing/routers/#certresolver
@@ -73,3 +75,6 @@ providers:
   file:
     filename: /etc/traefik/traefik.yml
     watch: true
+labels:
+  - "traefik.http.routers.traefik.middlewares=traefik-compress"
+  - "traefik.http.middlewares.traefik-compress.compress=true"

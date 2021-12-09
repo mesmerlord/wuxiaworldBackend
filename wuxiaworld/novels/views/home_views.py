@@ -16,7 +16,7 @@ class HomeSerializerView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = HomeSerializer
     
-    @cache_response(key_func = DefaultKeyConstructor(), timeout = 60*15)
+    @cache_response(key_func = DefaultKeyConstructor(), timeout = 60*60*24)
     def list(self, request, *args, **kwargs):
         categories_by_views = self.queryset.annotate(
             avg_views = Avg('novel__views__views')).order_by('-avg_views')[:3]
@@ -25,7 +25,7 @@ class HomeSerializerView(ListAPIView):
 
 class LatestChaptersSerializerView(ListAPIView):
     permission_classes = (ReadOnly,)
-    queryset = Chapter.objects.order_by("-created_at")[:30]
+    queryset = Chapter.objects.order_by("-created_at")[:10]
     serializer_class = LatestChapterSerializer
     pagination_class = None
     

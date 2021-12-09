@@ -193,12 +193,26 @@ class Review(BaseModel):
     description = models.TextField(blank = True, null = True)
     total_score = models.IntegerField(default = 5,
                  validators=[MinValueValidator(1), MaxValueValidator(5)])
-    last_read_chapter = models.ForeignKey(Chapter, on_delete=models.DO_NOTHING)
+    last_read_chapter = models.ForeignKey(Chapter, on_delete=models.DO_NOTHING,
+                    null=True, blank = True)
     owner_user = models.ForeignKey(Profile, on_delete=models.CASCADE)
     novel = models.ForeignKey(Novel,on_delete=models.CASCADE)
+    
+    class Meta:
+        unique_together = ('novel', 'owner_user',)
 
-class Announcements(BaseModel):
+class Announcement(BaseModel):
     title = models.CharField(max_length = 100)
     description = models.TextField()
     published = models.BooleanField(default = True)
     authored_by = models.ForeignKey(Profile, on_delete=models.CASCADE)
+
+class Report(BaseModel):
+    title = models.CharField(max_length = 100)
+    description = models.TextField()
+    reported_by = models.ForeignKey(Profile, on_delete=models.CASCADE, null = True, blank = True)
+    checked = models.BooleanField(default = False)
+    chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, null = True, blank = True)
+
+    class Meta:
+        unique_together = ('reported_by', 'chapter',)

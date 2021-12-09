@@ -49,3 +49,12 @@ class AuthorSerializerView(viewsets.ModelViewSet):
     serializer_class = AuthorSerializer
     pagination_classes = LimitOffsetPagination
 
+    @cache_response(key_func = DefaultKeyConstructor(), timeout = 60 * 60 * 12)
+    def retrieve(self, request, pk = None):
+        author = get_object_or_404(Author,slug = pk)
+        queryset = Novel.objects.filter(author = author)
+        page = self.paginate_queryset(queryset)
+        serializer = NovelInfoSerializer(page, many=True)
+        finaldata = {'author':author.name,'results':serializer.data}
+        return Response(finaldata)
+

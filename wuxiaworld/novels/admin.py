@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (Announcements, Novel,Author,Category,Chapter,NovelViews, 
+from .models import (Announcement, Novel,Author,Category,Chapter,NovelViews, 
                     Tag, Profile, Bookmark, Settings, BlacklistPattern, Review)
 
 def repeat_scrape_on(modeladmin, request, queryset):
@@ -84,7 +84,7 @@ class SettingsAdmin(admin.ModelAdmin):
 class BlacklistPatternAdmin(admin.ModelAdmin):
     list_display = ['pattern', "enabled", "replacement"]
 
-@admin.register(Announcements)
-class AnnouncementsAdmin(admin.ModelAdmin):
+@admin.register(Announcement)
+class AnnouncementAdmin(admin.ModelAdmin):
     list_display = ['title', "description", "authored_by"]
     

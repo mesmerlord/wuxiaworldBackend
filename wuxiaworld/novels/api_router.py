@@ -4,7 +4,8 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 from .views.views import (NovelSerializerView, CategorySerializerView, 
                 AuthorSerializerView, ChaptersSerializerView,SingleChapterSerializerView,
                 SearchSerializerView, ProfileSerializerView, TagSerializerView, 
-                BookmarkSerializerView, SettingsSerializerView )
+                BookmarkSerializerView, SettingsSerializerView, ReportSerializerView,
+                AnnouncementSerializerView, ReviewSerializerView)
 from wuxiaworld.novels.views.home_views import (HomeSerializerView, LatestChaptersSerializerView)
 from django.urls import include, path,re_path
 
@@ -23,6 +24,9 @@ router.register('search', SearchSerializerView)
 router.register('users', ProfileSerializerView)
 router.register('bookmark', BookmarkSerializerView)
 router.register('settings', SettingsSerializerView)
+router.register('report', ReportSerializerView)
+router.register('announcements', AnnouncementSerializerView)
+router.register('review', ReviewSerializerView)
 
 app_name = "api"
 urlpatterns = router.urls
