@@ -122,6 +122,7 @@ def get_image_from_url(url, novel):
     original = f"{media_url}/original/"
     full_folder = f"{media_url}/full/"
     thumbnail_folder = f"{media_url}/thumbnail/"
+    print(media_url, original, full_folder)
     if not (os.path.exists(original) and os.path.exists(full_folder) and \
         os.path.exists(thumbnail_folder)):
         os.makedirs(original)
@@ -144,7 +145,7 @@ def get_image_from_url(url, novel):
 def download_images():
     Novel = apps.get_model('novels', "Novel")
     novels = Novel.objects.all()
-    for novel in novels:
+    for novel in novels[:10]:
         if novel.image:
             try:
                 get_image_from_url(novel.image, novel)
