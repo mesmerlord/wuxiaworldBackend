@@ -11,7 +11,11 @@ import os
 import logging
 from wuxiaworld.novels.utils import delete_dupes, delete_unordered_chapters
 from django.conf import settings
-
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
+from urllib.request import urlretrieve
+from PIL import Image
+from django.core.files import File 
 
 logger = logging.getLogger("sentry_sdk")
 
@@ -113,18 +117,37 @@ def reset_yearly_views():
     novels = NovelViews.objects.all()
     novels.update(yearlyViews = 0)
 
-def check_if_image_in_media(image_file):
-    path_to_media = join(settings.MEDIA_ROOT, 'novel_images')
-    if not os.path.exists(path_to_media):
-        os.makedirs(path_to_media)
-    list_of_images = os.listdir(path_to_media)
-    if image_file in list_of_images:
-        return True
-    else:
-        return False
+def get_image_from_url(url, novel):
+    media_url = settings.MEDIA_ROOT
+    original = f"{media_url}/original/"
+    full_folder = f"{media_url}/full/"
+    thumbnail_folder = f"{media_url}/thumbnail/"
+    if not (os.path.exists(original) and os.path.exists(full_folder) and \
+        os.path.exists(thumbnail_folder)):
+        os.makedirs(original)
+        os.makedirs(full_folder)
+        os.makedirs(thumbnail_folder)
+
+    result = urlretrieve(url, f"{original}/{novel.slug}.jpg")
+
+    img = Image.open(f"{original}/{novel.slug}.jpg")    
+    im = img.resize((300, 375), Image.ANTIALIAS)
+    im_small = img.resize((150, 210), Image.ANTIALIAS)
+    im.save(f"{full_folder}/{novel.slug}-full.jpg")
+    im_small.save(f"{thumbnail_folder}/{novel.slug}-thumb.jpg")
+
+    novel.new_image = f"/full/{novel.slug}-full.jpg"
+    novel.new_image_thumb = f"/thumbnail/{novel.slug}-thumb.jpg"
+    novel.save()
 
 @shared_task()
 def download_images():
-    NovelViews = apps.get_model('novels', 'NovelViews')
-    novels = NovelViews.objects.all()
-    
+    Novel = apps.get_model('novels', "Novel")
+    novels = Novel.objects.all()
+    for novel in novels:
+        if novel.image:
+            try:
+                get_image_from_url(novel.image, novel)
+            except Exception as e:
+                print(e)
+                continue

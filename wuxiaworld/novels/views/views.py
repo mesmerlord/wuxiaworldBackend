@@ -6,7 +6,7 @@ from wuxiaworld.novels.views.profile_views import ProfileSerializerView
 from wuxiaworld.novels.views.settings_views import SettingsSerializerView
 from wuxiaworld.novels.views.novel_views import SearchSerializerView, NovelSerializerView
 from wuxiaworld.novels.views.util_views import (GoogleLogin, FacebookLogin, addNovels, addSources,
-                    deleteDuplicate, deleteUnordered, siteMap)
+                    deleteDuplicate, deleteUnordered, siteMap, replace_images)
 from wuxiaworld.novels.views.review_views import ReviewSerializerView
 from wuxiaworld.novels.views.report_views import ReportSerializerView
 from wuxiaworld.novels.views.announcement_views import AnnouncementSerializerView

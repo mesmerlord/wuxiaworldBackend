@@ -2,7 +2,7 @@ from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
 from allauth.socialaccount.providers.facebook.views import FacebookOAuth2Adapter
 from dj_rest_auth.registration.views import SocialLoginView
 from wuxiaworld.novels.tasks import (add_novels, add_sources, delete_dupes,
-                     delete_unordered_chapters )
+                     delete_unordered_chapters, download_images )
 
 from django.http import HttpResponse
 from ..models import Novel
@@ -14,11 +14,13 @@ class FacebookLogin(SocialLoginView):
     adapter_class = FacebookOAuth2Adapter
 
 def addNovels(request):
-    add_novels.delay()
+    if request.user.is_superuser:
+        add_novels.delay()
     return HttpResponse("<li>Done</li>")
 
 def addSources(request):
-    add_sources.delay()
+    if request.user.is_superuser:
+        add_sources.delay()
     return HttpResponse("<li>Done</li>")
 
 def deleteDuplicate(request):
@@ -26,7 +28,13 @@ def deleteDuplicate(request):
     return HttpResponse("<li>Done</li>")
 
 def deleteUnordered(request):
-    delete_unordered_chapters.delay()
+    if request.user.is_superuser:
+        delete_unordered_chapters.delay()
+    return HttpResponse("<li>Done</li>")
+
+def replace_images(request):
+    if request.user.is_superuser:
+        download_images.delay()
     return HttpResponse("<li>Done</li>")
 
 def siteMap(request, *args,**kwargs):

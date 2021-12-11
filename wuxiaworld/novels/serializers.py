@@ -79,6 +79,8 @@ class NovelSerializer(serializers.ModelSerializer):
     tag = TagSerializer(many= True)
     chapters = serializers.SerializerMethodField(method_name = "get_chapters")
     review_count = serializers.IntegerField()    
+    image = serializers.ImageField(use_url=True, source = "new_image")
+    imageThumb = serializers.ImageField(use_url=True, source = "new_image_thumb")
 
     class Meta:
         model = Novel
@@ -91,9 +93,11 @@ class NovelSerializer(serializers.ModelSerializer):
     
 
 class NovelInfoSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(use_url=True, source = "new_image")
+    imageThumb = serializers.ImageField(use_url=True, source = "new_image_thumb")
     class Meta:
         model = Novel
-        fields = ('name', 'image', 'slug', )
+        fields = ('name', 'image', 'slug')
 
 class LoggedNovelInfoSerializer(serializers.ModelSerializer):
     bookmarked = serializers.SerializerMethodField(method_name = "get_bookmark")
@@ -172,13 +176,14 @@ class BookmarkSerializer(serializers.ModelSerializer):
 class HomeNovelSerializer(serializers.ModelSerializer):
     views = serializers.CharField(source = "human_views")
     chapters = serializers.CharField(source = "chapter_count")
+    image = serializers.ImageField(use_url=True, source = "new_image")
+    imageThumb = serializers.ImageField(use_url=True, source = "new_image_thumb")
 
     class Meta:
         model = Novel
         fields = ('name', 'image','slug','description', "rating", "ranking", "views", "chapters",
         "imageThumb")
     
-
 class HomeSerializer(serializers.ModelSerializer):
     # views_count = serializers.CharField()
     novels = serializers.SerializerMethodField(source = "get_novels")
@@ -188,16 +193,22 @@ class HomeSerializer(serializers.ModelSerializer):
         exclude = ('created_at','updated_at', "id")
     def get_novels(self,obj):
         novels = Novel.objects.filter(category = obj).order_by("-views__views")[:8]
-        return HomeNovelSerializer(novels, many = True).data
+        return HomeNovelSerializer(novels, many = True, 
+        context={'request': self.context['request']}).data
 
 class LatestChapterSerializer(serializers.ModelSerializer):
     novel_name = serializers.CharField(source = "novelParent.name")
-    novel_thumb = serializers.CharField(source = "novelParent.imageThumb")
+    novel_thumb = serializers.SerializerMethodField()
     created_at = serializers.CharField(source = "get_human_time")
     class Meta:
         model = Chapter
         exclude = ("text",'updated_at', "id","scrapeLink")
-    
+    def get_novel_thumb(self,obj):
+        if obj.novelParent.new_image_thumb:
+            request = self.context.get("request")
+            return request.build_absolute_uri(obj.novelParent.new_image_thumb.url)
+        else:
+            return None
 class AnnouncementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Announcement
@@ -223,3 +234,22 @@ class CatOrTagSerializer(serializers.ModelSerializer):
         model = Novel
         fields = ('name', 'image','slug','description', "rating", "ranking", "views", "chapters",
         "imageThumb", "category", "tag")
+    
+class CategoryListSerializer(serializers.ModelSerializer):
+    novels = serializers.SerializerMethodField(source = "get_novels")
+    class Meta:
+        model = Category
+        exclude = ('created_at','updated_at', "id")
+    def get_novels(self,obj):
+        novels = Novel.objects.filter(category = obj).order_by("-views__views")[:8]
+        return HomeNovelSerializer(novels, many = True).data
+    
+class TagListSerializer(serializers.ModelSerializer):
+    novels = serializers.SerializerMethodField(source = "get_novels")
+    class Meta:
+        model = Tag
+        exclude = ('created_at','updated_at', "id")
+    def get_novels(self,obj):
+        novels = Novel.objects.filter(tag = obj).order_by("-views__views")[:8]
+        return HomeNovelSerializer(novels, many = True,
+                context={'request': self.context['request']}).data

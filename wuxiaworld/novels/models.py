@@ -99,6 +99,11 @@ class Novel(BaseModel):
     repeatScrape = models.BooleanField(default = False)
     last_chap_updated = models.DateTimeField(default = now)
     rating = models.DecimalField(blank = True, default = 5.0, max_digits = 3, decimal_places = 2)
+    
+    original_image = models.ImageField(upload_to='original/', default = "")
+    new_image = models.ImageField(upload_to='full/', default = "")
+    new_image_thumb = models.ImageField(upload_to='thumbnail/', default = "")
+
     def __str__(self):
         return self.name
     
