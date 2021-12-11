@@ -1,7 +1,7 @@
 from wuxiaworld.novels.serializers import (CategorySerializer, NovelSerializer,
                                 TagSerializer, AuthorSerializer,NovelInfoSerializer,
                                 CatOrTagSerializer, CategoryListSerializer, 
-                                TagListSerializer )
+                                TagListSerializer, HomeNovelSerializer)
 from wuxiaworld.novels.models import Novel, Category, Tag, Author
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -26,7 +26,7 @@ class CategorySerializerView(viewsets.ModelViewSet):
         category = get_object_or_404(Category,slug = pk)
         queryset = Novel.objects.filter(category = category)
         page = self.paginate_queryset(queryset)
-        serializer = NovelSerializer(page, many=True, context={'request': request})
+        serializer = HomeNovelSerializer(page, many=True, context={'request': request})
         finaldata = {'category':category.name,'results':serializer.data,'count':queryset.count()}
         return Response(finaldata)
     
@@ -37,7 +37,7 @@ class CategorySerializerView(viewsets.ModelViewSet):
             ).order_by('-avg_views')
         category = categories_by_views.filter(
             novel_count__gt = 7
-        )
+        )[:10]
         serializer = CategoryListSerializer(category,many=True,
                      context={'request': request})
         categories = CategorySerializer(categories_by_views, many = True)
@@ -66,7 +66,7 @@ class TagSerializerView(viewsets.ModelViewSet):
                 novel_count = Count('novel'))
         tag = tags_by_views.filter(
             novel_count__gt = 7
-        )[:10]
+        )[:5]
         serializer = TagListSerializer(tag,many=True, context={'request': request})
         tags = TagSerializer(tags_by_views,many=True)
 

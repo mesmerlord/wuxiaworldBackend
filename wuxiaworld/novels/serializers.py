@@ -229,6 +229,8 @@ class CatOrTagSerializer(serializers.ModelSerializer):
     chapters = serializers.CharField(source = "chapter_count")
     category = CategorySerializer(many = True)
     tag = TagSerializer(many = True)
+    image = serializers.ImageField(use_url=True, source = "new_image")
+    imageThumb = serializers.ImageField(use_url=True, source = "new_image_thumb")
 
     class Meta:
         model = Novel
@@ -241,7 +243,7 @@ class CategoryListSerializer(serializers.ModelSerializer):
         model = Category
         exclude = ('created_at','updated_at', "id")
     def get_novels(self,obj):
-        novels = Novel.objects.filter(category = obj).order_by("-views__views")[:8]
+        novels = Novel.objects.filter(category = obj).order_by("-views__views")[:4]
         return HomeNovelSerializer(novels, many = True).data
     
 class TagListSerializer(serializers.ModelSerializer):
@@ -250,6 +252,6 @@ class TagListSerializer(serializers.ModelSerializer):
         model = Tag
         exclude = ('created_at','updated_at', "id")
     def get_novels(self,obj):
-        novels = Novel.objects.filter(tag = obj).order_by("-views__views")[:8]
+        novels = Novel.objects.filter(tag = obj).order_by("-views__views")[:4]
         return HomeNovelSerializer(novels, many = True,
                 context={'request': self.context['request']}).data

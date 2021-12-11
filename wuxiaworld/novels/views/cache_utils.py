@@ -18,3 +18,4 @@ class UserKeyConstructor(DefaultKeyConstructor):
 
 class DummyConstructor(KeyConstructor):
     unique_view_id = bits.UniqueMethodIdKeyBit()
+    format = bits.FormatKeyBit()
