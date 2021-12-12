@@ -44,8 +44,6 @@ services:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
       - "0.0.0.0:5555:5555"
-    labels:
-      - "traefik.http.middlewares.test-compress.compress=true"
   redis:
     image: redis:5.0
 
