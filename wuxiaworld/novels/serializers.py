@@ -94,7 +94,7 @@ class NovelSerializer(serializers.ModelSerializer):
 
 class NovelInfoSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True, source = "new_image")
-    imageThumb = serializers.ImageField(use_url=True, source = "new_image_thumb")
+    # imageThumb = serializers.ImageField(use_url=True, source = "new_image_thumb")
     class Meta:
         model = Novel
         fields = ('name', 'image', 'slug')

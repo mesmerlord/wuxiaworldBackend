@@ -26,7 +26,7 @@ class HomeSerializerView(ListAPIView):
 
 class LatestChaptersSerializerView(ListAPIView):
     permission_classes = (ReadOnly,)
-    queryset = Chapter.objects.order_by("-created_at")[:20]
+    queryset = Chapter.objects.order_by("-created_at")[:10]
     serializer_class = LatestChapterSerializer
     pagination_class = None
     
