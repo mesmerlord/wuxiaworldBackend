@@ -6,17 +6,17 @@ class MediaStorage(S3Boto3Storage):
     file_overwrite = False
 
 class ThumbnailStorage(S3Boto3Storage):
-    location = 'media/thumbnail'
+    location = 'thumbnail'
     default_acl = 'public-read'
     file_overwrite = False
 
 
 class FullStorage(S3Boto3Storage):
-    location = 'media/full'
+    location = 'full'
     default_acl = 'public-read'
     file_overwrite = False
 
 class OriginalStorage(S3Boto3Storage):
-    location = 'media/original'
+    location = 'original'
     default_acl = 'public-read'
     file_overwrite = False
