@@ -90,7 +90,6 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 
 AWS_DEFAULT_ACL = 'public-read'
-STATICFILES_STORAGE = 'custom_storages.StaticStorage'
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
 
 # Use AWS_S3_ENDPOINT_URL here if you haven't enabled the CDN and got a custom domain. 
