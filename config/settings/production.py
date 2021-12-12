@@ -82,20 +82,18 @@ STATICFILES_DIRS = [str(APPS_DIR / "static")]
 # https://django-storages.readthedocs.io/en/latest/#installation
 AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+AWS_DEFAULT_ACL = 'public-read'
 AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
 AWS_S3_ENDPOINT_URL = env('AWS_S3_ENDPOINT_URL')
 AWS_S3_CUSTOM_DOMAIN = env('AWS_S3_CUSTOM_DOMAIN')
+PUBLIC_MEDIA_LOCATION = 'media'
+MEDIA_URL = f'https://{AWS_S3_ENDPOINT_URL}/{PUBLIC_MEDIA_LOCATION}/'
 AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
+    'CacheControl': 'max-age=600',
 }
 
-AWS_DEFAULT_ACL = 'public-read'
-DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+DEFAULT_FILE_STORAGE = 'wuxiaworld.custom_storages.MediaStorage'
 
-# Use AWS_S3_ENDPOINT_URL here if you haven't enabled the CDN and got a custom domain. 
-
-MEDIA_URL = '{}/{}/'.format(AWS_S3_CUSTOM_DOMAIN, 'media')
-MEDIA_ROOT = 'media/'
 
 # TEMPLATES
 # ------------------------------------------------------------------------------

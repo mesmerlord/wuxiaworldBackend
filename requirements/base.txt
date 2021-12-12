@@ -32,3 +32,5 @@ django-jazzmin
 
 # Scraper
 lightnovel-crawler
+django-storages
+boto3

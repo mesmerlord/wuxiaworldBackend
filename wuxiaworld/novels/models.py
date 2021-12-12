@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.humanize.templatetags.humanize import naturalday, naturaltime, ordinal
 from datetime import timedelta
+from wuxiaworld.custom_storages import (ThumbnailStorage, FullStorage, 
+                        OriginalStorage)
 
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add= True)
@@ -100,9 +102,9 @@ class Novel(BaseModel):
     last_chap_updated = models.DateTimeField(default = now)
     rating = models.DecimalField(blank = True, default = 5.0, max_digits = 3, decimal_places = 2)
     
-    original_image = models.ImageField(upload_to='original/', default = "")
-    new_image = models.ImageField(upload_to='full/', default = "")
-    new_image_thumb = models.ImageField(upload_to='thumbnail/', default = "")
+    original_image = models.ImageField(storage=OriginalStorage(), blank = True, null = True)
+    new_image = models.ImageField(storage=FullStorage(), blank = True, null = True)
+    new_image_thumb = models.ImageField(storage=ThumbnailStorage(), blank = True, null = True)
 
     def __str__(self):
         return self.name
