@@ -85,6 +85,7 @@ RUN chmod +x /start-flower
 
 # copy application code to WORKDIR
 COPY --chown=django:django . ${APP_HOME}
+COPY ./wuxiaworld/media /usr/wuxiaworld/media
 
 # make django owner of the WORKDIR directory as well.
 RUN chown django:django ${APP_HOME}
