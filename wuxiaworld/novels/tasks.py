@@ -122,7 +122,6 @@ def get_image_from_url(url, novel):
     original = f"{media_url}/original/"
     full_folder = f"{media_url}/full/"
     thumbnail_folder = f"{media_url}/thumbnail/"
-    print(media_url, original, full_folder)
     if not (os.path.exists(original) and os.path.exists(full_folder) and \
         os.path.exists(thumbnail_folder)):
         os.makedirs(original)
