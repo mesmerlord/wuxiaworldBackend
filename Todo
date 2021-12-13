@@ -1,11 +1,6 @@
 In Progress:
 1 -- 3 Story: Add api gateway to trigger manual run of periodic task, accessible by admin only
-1 -- 8 Feature : Remove novelupdates cdn images and replace with novelImage and novelThumb 
-from Novel model and create periodic task to 
-1 -- 5 Feature: Change bookcards for categories page to new bookcard
 1 -- 5 Feature: Categories and pages should be paginated instead of infinite load
-2 -- 5 Feature: Add filters to categories and tags pages
-2 -- 5 Feature: Change bookcards for categories page to new bookcard
 2 -- 8 Feature: Add facebook social login (Mostly implemented)
 
 To do:
@@ -28,6 +23,8 @@ currently
 3 -- 13 Epic: Create model for comments instead of relying on disqus
 3 -- 20 Epic: Check sentry log and fix the most frequent bugs
 3 -- 20 Epic: Create forum for novel discussion
+1 -- 8 Feature : Remove novelupdates cdn images and replace with novelImage and novelThumb 
+from Novel model and create periodic task to 
 
 Done:
 xx Add a check if all the previous scraped chap names and index are the same - If not add a Sentry Log
@@ -40,6 +37,9 @@ id(alphanumeric, unique), total score, chapter last read(foreign key to chapter)
 1 -- 8 Feature: Add API views with filter options(by weekly, monthly views, number of chapters,
 name, date added, last chapter added, number of reviews, review score ) #Enable caching on some of these
 3 -- 13 Story: Add caching to APIs(novel list, chapter list, rankings)
+2 -- 5 Feature: Change bookcards for categories page to new bookcard
+2 -- 5 Feature: Add filters to categories and tags pages
+1 -- 5 Feature: Change bookcards for categories page to new bookcard
 
 Cancelled:
 
@@ -48,3 +48,14 @@ just better app structure
 1 -- 8 Story: Add new version of API to seperate api views -- Workaround created different view files
 1 -- 5 Story: Change frontpage cards to sliders with sections for each category --Cancelled
 3 -- 3 Spike : Find way to host images on own server instead of relying on novelupdates cdn
+
+#Ideas
+Points : Everyday per 12 hours, users can get variable points. The hook
+Points: Modal for showing congrats you earned this many points
+Points: Ways of earning points - Commenting, x number of points per day by
+      reading chapters, successful report chapter, add tags, suggest novel edit,
+      invite users, create profile, upload avatar, buy, get likes
+Points: Rewards for points - Download EPUB, ad-free day, advanced chapters for select
+      novels, increase rank, 
+
+Custom novels: Users should be able to create their own novels.

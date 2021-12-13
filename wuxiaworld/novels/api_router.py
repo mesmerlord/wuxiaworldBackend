@@ -6,7 +6,9 @@ from .views.views import (NovelSerializerView, CategorySerializerView,
                 SearchSerializerView, ProfileSerializerView, TagSerializerView, 
                 BookmarkSerializerView, SettingsSerializerView, ReportSerializerView,
                 AnnouncementSerializerView, ReviewSerializerView)
-from wuxiaworld.novels.views.home_views import (HomeSerializerView, LatestChaptersSerializerView)
+from wuxiaworld.novels.views.home_views import (HomeSerializerView,
+             LatestChaptersSerializerView, )
+from wuxiaworld.novels.views.recommendation_views import (RecommendationSerializerView)
 from django.urls import include, path,re_path
 
 if settings.DEBUG:
@@ -33,5 +35,6 @@ urlpatterns = router.urls
 urlpatterns += [
     path('home_view/', HomeSerializerView.as_view()),
     path('latest_chapters/', LatestChaptersSerializerView.as_view()),
+    path('recommendations/<pk>', RecommendationSerializerView.as_view()),
             
             ]
