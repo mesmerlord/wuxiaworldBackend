@@ -147,7 +147,8 @@ class Chapter(BaseModel):
     text = models.TextField(max_length=None)
     title = models.TextField(max_length = 200)
     novelParent = models.ForeignKey(Novel, on_delete = models.CASCADE, verbose_name = "chapter")
-    novSlugChapSlug = models.CharField( max_length = 200, blank = True, default = None)
+    novSlugChapSlug = models.CharField( max_length = 200, blank = True, default = None,
+                db_index = True)
     scrapeLink = models.CharField(max_length = 200, blank = False)
     def save(self, *args, **kwargs):
         if not self.index:
