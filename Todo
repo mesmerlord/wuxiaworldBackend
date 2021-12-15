@@ -1,7 +1,6 @@
 In Progress:
 1 -- 3 Story: Add api gateway to trigger manual run of periodic task, accessible by admin only
 1 -- 5 Feature: Categories and pages should be paginated instead of infinite load
-2 -- 8 Feature: Add facebook social login (Mostly implemented)
 
 To do:
 Priority, story points, description
@@ -16,15 +15,13 @@ Priority, story points, description
 only for paid users.
 3 -- ?? Epic : Create a mobile app(not PWA), similar layout, main feature being downloads
 available for all
-3 -- 5 Spike : Find if Adsense low RPM is due to React render issue or if its normal and will
-increase with growth in number of users
+
 3 -- 5 Feature: Fix sentry logging(shouldn't be active for scraping), too many issues being logged
 currently
 3 -- 13 Epic: Create model for comments instead of relying on disqus
 3 -- 20 Epic: Check sentry log and fix the most frequent bugs
 3 -- 20 Epic: Create forum for novel discussion
-1 -- 8 Feature : Remove novelupdates cdn images and replace with novelImage and novelThumb 
-from Novel model and create periodic task to 
+
 
 Done:
 xx Add a check if all the previous scraped chap names and index are the same - If not add a Sentry Log
@@ -40,6 +37,11 @@ name, date added, last chapter added, number of reviews, review score ) #Enable 
 2 -- 5 Feature: Change bookcards for categories page to new bookcard
 2 -- 5 Feature: Add filters to categories and tags pages
 1 -- 5 Feature: Change bookcards for categories page to new bookcard
+2 -- 8 Feature: Add facebook social login (Mostly implemented)
+1 -- 8 Feature : Remove novelupdates cdn images and replace with novelImage and novelThumb 
+from Novel model and create periodic task to 
+3 -- 5 Spike : Find if Adsense low RPM is due to React render issue or if its normal and will
+increase with growth in number of users
 
 Cancelled:
 

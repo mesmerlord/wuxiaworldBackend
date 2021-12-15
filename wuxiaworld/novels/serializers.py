@@ -215,6 +215,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class ReportSerializer(serializers.ModelSerializer):
+    checked = serializers.CharField(read_only = True)
     class Meta:
         model = Report
         fields = "__all__"
