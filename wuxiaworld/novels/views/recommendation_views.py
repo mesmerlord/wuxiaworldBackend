@@ -18,7 +18,7 @@ class RecommendationSerializerView(RetrieveAPIView):
         obj = self.get_object()
         random_tag = Tag.objects.filter(novel = obj).order_by('?').first()
         novels = Novel.objects.filter(tag = random_tag).order_by(
-            "-views__views").exclude(slug=obj.slug)[:12]
+            "-views__views").exclude(slug=obj.slug)[:16]
         serializer = HomeNovelSerializer(novels, 
                 many=True,context={'request': request})
         return Response({"results":serializer.data, "tag": random_tag.name,
