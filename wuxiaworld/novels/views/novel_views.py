@@ -43,13 +43,7 @@ class NovelSerializerView(viewsets.ModelViewSet):
             return CatOrTagSerializer
         else:
             return self.serializer_class
-    def get_queryset(self):
-        if self.action == "list":
-            return super().get_queryset().select_related("views").prefetch_related(
-            "category", "tag" )
-        elif self.action == "retrieve":
-            return super().get_queryset()
-
+    
     @cache_response(key_func = UserKeyConstructor(), timeout = 60*60)
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
