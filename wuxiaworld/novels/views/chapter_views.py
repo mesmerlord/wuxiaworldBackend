@@ -44,7 +44,8 @@ class ChaptersSerializerView(viewsets.ModelViewSet):
     serializer_class = ChaptersSerializer
 
     def retrieve(self, request, pk=None):
-        queryset = Chapter.objects.filter(novelParent = pk).order_by("index")
+        queryset = Chapter.objects.filter(novelParent = pk).order_by(
+            "index").only('index','title',"novSlugChapSlug","created_at")
         serializer = ChaptersSerializer(queryset, many = True)
         return Response(serializer.data)
          

@@ -1,4 +1,4 @@
-from wuxiaworld.novels.serializers import BookmarkSerializer
+from wuxiaworld.novels.serializers import BookmarkSerializer, UpdateBookmarkSerializer
 from wuxiaworld.novels.models import Bookmark, Profile, Novel, Chapter
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
@@ -32,14 +32,17 @@ class BookmarkSerializerView(viewsets.ModelViewSet):
         if not novSlugChapSlug and not novSlug:
             return Response({'message':'novSlugChapSlug or novSlug not provided'},
              status = status.HTTP_404_NOT_FOUND)
+        profile = Profile.objects.get(user = request.user) 
         if novSlugChapSlug:
             chapter = get_object_or_404(Chapter, novSlugChapSlug = novSlugChapSlug)
             bookmark, created = Bookmark.objects.update_or_create(novel = chapter.novelParent, 
-                        profile__user = request.user, defaults={'chapter':chapter})
+                        profile = profile, defaults={'chapter':chapter})
+
         elif novSlug:
             novel = get_object_or_404(Novel, slug = novSlug)
-            bookmark, created = Bookmark.objects.update_or_create(novel = novel, 
-                        profile__user = request.user)
-        profile = Profile.objects.get(user = request.user)
+            bookmark = Bookmark.objects.create(novel = novel, 
+                        profile = profile)
+
         profile.reading_lists.add(bookmark)
-        return Response(BookmarkSerializer(bookmark).data)
+        return Response(UpdateBookmarkSerializer(bookmark).data)
+

@@ -36,8 +36,7 @@ http:
         - web-secure
       middlewares:
         - csrf
-        # - test-compress:
-        #   compress: {}
+        - test-compress
       service: django
       tls:
         # https://docs.traefik.io/master/routing/routers/#certresolver
@@ -58,6 +57,10 @@ http:
       # https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
       headers:
         hostsProxyHeaders: ["X-CSRFToken"]
+    test-compress:
+      compress:
+        excludedContentTypes:
+          - text/event-stream
 
   services:
     django:
@@ -76,5 +79,5 @@ providers:
     filename: /etc/traefik/traefik.yml
     watch: true
 labels:
-  - "traefik.http.routers.traefik.middlewares=traefik-compress"
+  - "traefik.http.routers.web-secure-router.middlewares=traefik-compress"
   - "traefik.http.middlewares.traefik-compress.compress=true"

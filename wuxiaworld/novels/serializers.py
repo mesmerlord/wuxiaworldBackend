@@ -173,6 +173,18 @@ class BookmarkSerializer(serializers.ModelSerializer):
         else:
             return None
 
+class UpdateBookmarkSerializer(serializers.ModelSerializer):
+    last_read = serializers.SerializerMethodField(method_name = "get_last_read")
+    def get_last_read(self,obj):
+        if obj.chapter:
+            return ChaptersSerializer(obj.chapter).data
+        elif obj.novel:
+            data = Chapter.objects.filter(novelParent = obj.novel).order_by('index')
+            if data:
+                return ChaptersSerializer(data.first()).data
+            else:
+                return None
+
 class HomeNovelSerializer(serializers.ModelSerializer):
     views = serializers.CharField(source = "human_views")
     chapters = serializers.CharField(source = "chapter_count")
@@ -198,17 +210,18 @@ class HomeSerializer(serializers.ModelSerializer):
 
 class LatestChapterSerializer(serializers.ModelSerializer):
     novel_name = serializers.CharField(source = "novelParent.name")
-    novel_thumb = serializers.SerializerMethodField()
+    novel_thumb = serializers.ImageField(use_url=True,
+                 source = "novelParent.new_image_thumb")
     created_at = serializers.CharField(source = "get_human_time")
     class Meta:
         model = Chapter
         exclude = ("text",'updated_at', "id","scrapeLink")
-    def get_novel_thumb(self,obj):
-        if obj.novelParent.new_image_thumb:
-            request = self.context.get("request")
-            return request.build_absolute_uri(obj.novelParent.new_image_thumb.url)
-        else:
-            return None
+    # def get_novel_thumb(self,obj):
+    #     if obj.novelParent.new_image_thumb:
+    #         request = self.context.get("request")
+    #         return request.build_absolute_uri(obj.novelParent.new_image_thumb.url)
+    #     else:
+    #         return None
 class AnnouncementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Announcement

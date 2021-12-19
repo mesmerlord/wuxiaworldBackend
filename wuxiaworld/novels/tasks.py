@@ -17,7 +17,7 @@ from urllib.request import urlretrieve
 from PIL import Image
 from django.core.files import File 
 
-logger = logging.getLogger("sentry_sdk")
+# logger = logging.getLogger("sentry_sdk")
 
 chapters_folder = "chapters"
 
