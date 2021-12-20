@@ -45,7 +45,7 @@ class NovelSerializerView(viewsets.ModelViewSet):
             return self.serializer_class
     
     def get_queryset(self):
-        return super().get_queryset(self).distinct()
+        return super().get_queryset().distinct()
 
     @cache_response(key_func = UserKeyConstructor(), timeout = 60*60)
     def retrieve(self, request, *args, **kwargs):
