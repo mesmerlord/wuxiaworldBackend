@@ -51,7 +51,9 @@ class Category(BaseModel):
         novels = Novel.objects.filter(category = self)
         views = novels.aggregate(avg_views = Sum('views__views'))
         return views['avg_views']
-
+    class Meta:
+        ordering = ['name']
+        
 class Tag(BaseModel):
     name = models.CharField(max_length = 200, unique = True)
     slug = models.CharField(max_length = 200, blank = True)
@@ -65,6 +67,8 @@ class Tag(BaseModel):
     def novels_count(self):
         novels = Novel.objects.filter(tag = self)
         return novels.count()
+    class Meta:
+        ordering = ['name']
 
 class NovelViews(BaseModel):
     viewsNovelName = models.SlugField(max_length = 200, default = "",unique = True)

@@ -40,8 +40,12 @@ class BookmarkSerializerView(viewsets.ModelViewSet):
 
         elif novSlug:
             novel = get_object_or_404(Novel, slug = novSlug)
-            bookmark = Bookmark.objects.create(novel = novel, 
-                        profile = profile)
+            bookmark, created = Bookmark.objects.update_or_create(novel = novel, 
+                        profile = profile, defaults={'chapter':None})
+        else: 
+            return Response({'message':'novSlugChapSlug or novSlug not provided'},
+             status = status.HTTP_404_NOT_FOUND)
+
 
         profile.reading_lists.add(bookmark)
         return Response(UpdateBookmarkSerializer(bookmark).data)

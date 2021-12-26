@@ -11,11 +11,13 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         exclude = ('created_at','updated_at', "id")
+        ordering = ['name']
        
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         exclude = ('created_at','updated_at')
+        ordering = ['name']
        
 class ChapterSerializer(serializers.ModelSerializer):
     novelParentName = serializers.CharField(source='novelParent.name')
@@ -81,6 +83,7 @@ class NovelSerializer(serializers.ModelSerializer):
     review_count = serializers.IntegerField()    
     image = serializers.ImageField(use_url=True, source = "new_image")
     imageThumb = serializers.ImageField(use_url=True, source = "new_image_thumb")
+    first_chapter = serializers.SerializerMethodField(method_name = "get_first_chapter")
 
     class Meta:
         model = Novel
@@ -90,7 +93,12 @@ class NovelSerializer(serializers.ModelSerializer):
     def get_chapters(self,obj):
         chapter = Chapter.objects.filter(novelParent = obj)
         return chapter.count()
-    
+    def get_first_chapter(self,obj):
+        chapter = Chapter.objects.filter(novelParent = obj).order_by("index").first()
+        if chapter:
+            return chapter.novSlugChapSlug
+        else:
+            return None
 
 class NovelInfoSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True, source = "new_image")
@@ -184,6 +192,9 @@ class UpdateBookmarkSerializer(serializers.ModelSerializer):
                 return ChaptersSerializer(data.first()).data
             else:
                 return None
+    class Meta:
+        model = Bookmark
+        fields = ("last_read", "created_at", "id")
 
 class HomeNovelSerializer(serializers.ModelSerializer):
     views = serializers.CharField(source = "human_views")

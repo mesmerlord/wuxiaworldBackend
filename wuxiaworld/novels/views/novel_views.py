@@ -33,7 +33,7 @@ class SearchSerializerView(viewsets.ModelViewSet):
 
 class NovelSerializerView(viewsets.ModelViewSet):
     permission_classes = (ReadOnly,)
-    queryset = Novel.objects.all()
+    queryset = Novel.objects.annotate(num_of_chaps = Count("chapter"))
     filter_backends = [DjangoFilterBackend]
     filterset_class = NovelParamsFilter
     serializer_class = NovelSerializer

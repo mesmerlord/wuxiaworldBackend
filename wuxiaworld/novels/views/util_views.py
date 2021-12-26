@@ -45,3 +45,12 @@ def siteMap(request, *args,**kwargs):
     sitemap = top+"\n".join([f"<url><loc>https://www.{siteName[0]}.{siteName[1]}/novel/{x[0]}</loc><lastmod>{x[1].date()}</lastmod></url>" \
                 for x in allNovels]) + bottom
     return HttpResponse(sitemap, content_type='text/xml')
+
+def return_robots(request):
+    lines = [
+        "User-Agent: *",
+        "Disallow: /private/",
+        "Disallow: /junk/",
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain")
+    

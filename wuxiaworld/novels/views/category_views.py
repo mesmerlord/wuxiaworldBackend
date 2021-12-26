@@ -52,7 +52,7 @@ class TagSerializerView(viewsets.ModelViewSet):
     @cache_response(key_func = DefaultKeyConstructor(), timeout = 60 * 15)
     def retrieve(self, request, pk = None):
         tag = get_object_or_404(Tag,slug = pk)
-        queryset = Novel.objects.filter(tag = tag)
+        queryset = Novel.objects.filter(tag__slug = pk)
         page = self.paginate_queryset(queryset)
         serializer = NovelInfoSerializer(page, many=True,context={'request': request})
         finaldata = {'tag':tag.name,'results':serializer.data}

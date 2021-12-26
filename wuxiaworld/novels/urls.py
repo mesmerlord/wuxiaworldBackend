@@ -5,22 +5,27 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path,re_path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
+from wuxiaworld.novels.views.util_views import return_robots
 from wuxiaworld.novels.views.views import (deleteDuplicate, deleteUnordered, addNovels,siteMap,
             addSources, replace_images)
 from wuxiaworld.novels.views.views import (GoogleLogin, FacebookLogin)
 
 urlpatterns = [
     # path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+
     path(settings.ADMIN_URL, admin.site.urls),
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     # Static file serving when using Gunicorn + Uvicorn for local web socket development
     urlpatterns += staticfiles_urlpatterns()
-
+    
+else:
+    urlpatterns += [path("", return_robots, name = "home"),]
 # API URLS
 urlpatterns += [
     # API base url
+    path("robots.txt", return_robots),
     path("api/", include("wuxiaworld.novels.api_router")),
     # DRF auth token
     path("upload/novels", addNovels),

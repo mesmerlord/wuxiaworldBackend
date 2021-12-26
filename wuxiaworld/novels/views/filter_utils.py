@@ -13,7 +13,7 @@ class NovelParamsFilter(django_filters.FilterSet):
             ('views__views', 'total_views'),('name','name'),
             ('created_at','created_at'),('numOfChaps','numOfChaps'),
             ('views__weeklyViews','weekly_views'),('views__monthlyViews','monthly_views'),
-            ('views__yearlyViews','yearly_views'),('chapter_count','num_of_chaps'),
+            ('views__yearlyViews','yearly_views'),('num_of_chaps','num_of_chaps'),
             ('rating','rating')
         ),
 
