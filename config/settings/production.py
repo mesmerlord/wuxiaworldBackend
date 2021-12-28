@@ -89,7 +89,7 @@ AWS_S3_CUSTOM_DOMAIN = env('AWS_S3_CUSTOM_DOMAIN')
 PUBLIC_MEDIA_LOCATION = 'media'
 MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/'
 AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=600',
+    'CacheControl': 'max-age=604800',
 }
 
 DEFAULT_FILE_STORAGE = 'wuxiaworld.custom_storages.MediaStorage'
