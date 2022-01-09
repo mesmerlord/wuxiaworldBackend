@@ -93,7 +93,7 @@ def continous_scrape(slug):
     Novel = apps.get_model("novels", "Novel")
     Source = apps.get_model("scraper", "Source")
     queriedNovel = Novel.objects.get(slug = slug)
-    sources = Source.objects.filter(source_novel__slug = slug, disabled = False).order_by("-priority")
+    sources = Source.objects.filter(source_novel__slug = slug, disabled = False).order_by("priority")
     if not sources.count():
         return f"No Sources for {queriedNovel.name}"
     if not queriedNovel.repeatScrape:
