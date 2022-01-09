@@ -1,5 +1,5 @@
 from wuxiaworld.novels.serializers import (HomeNovelSerializer, SearchSerializer,
-                     NovelSerializer, CatOrTagSerializer)
+                     NovelSerializer, CatOrTagSerializer, AllNovelSerializer)
 from wuxiaworld.novels.models import Novel, NovelViews
 from rest_framework import viewsets, filters, pagination
 from wuxiaworld.novels.permissions import ReadOnly
@@ -54,3 +54,15 @@ class NovelSerializerView(viewsets.ModelViewSet):
     @cache_response(key_func = DefaultKeyConstructor(), timeout = 60*60*2)
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
+class GetAllNovelSerializerView(viewsets.ModelViewSet):
+    permission_classes = (permissions.IsAdminUser,)
+    queryset = Novel.objects.annotate(num_of_chaps = Count("chapter"))
+    serializer_class = NovelSerializer
+    pagination_class = None
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return AllNovelSerializer
+        else:
+            return super().get_serializer_class()

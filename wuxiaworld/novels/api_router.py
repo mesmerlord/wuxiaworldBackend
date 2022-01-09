@@ -5,7 +5,8 @@ from .views.views import (NovelSerializerView, CategorySerializerView,
                 AuthorSerializerView, ChaptersSerializerView,SingleChapterSerializerView,
                 SearchSerializerView, ProfileSerializerView, TagSerializerView, 
                 BookmarkSerializerView, SettingsSerializerView, ReportSerializerView,
-                AnnouncementSerializerView, ReviewSerializerView)
+                AnnouncementSerializerView, ReviewSerializerView,
+                GetAllNovelSerializerView)
 from wuxiaworld.novels.views.home_views import (HomeSerializerView,
              LatestChaptersSerializerView, )
 from wuxiaworld.novels.views.recommendation_views import (RecommendationSerializerView)
@@ -17,6 +18,7 @@ else:
     router = SimpleRouter()
 
 router.register('novels', NovelSerializerView)
+router.register('admin-novels', GetAllNovelSerializerView)
 router.register('categories', CategorySerializerView)
 router.register('tags', TagSerializerView)
 router.register('author', AuthorSerializerView)

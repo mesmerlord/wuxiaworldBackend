@@ -4,7 +4,8 @@ from wuxiaworld.novels.views.category_views import (CategorySerializerView, TagS
                                         AuthorSerializerView)
 from wuxiaworld.novels.views.profile_views import ProfileSerializerView
 from wuxiaworld.novels.views.settings_views import SettingsSerializerView
-from wuxiaworld.novels.views.novel_views import SearchSerializerView, NovelSerializerView
+from wuxiaworld.novels.views.novel_views import (SearchSerializerView,
+             NovelSerializerView, GetAllNovelSerializerView)
 from wuxiaworld.novels.views.util_views import (GoogleLogin, FacebookLogin, addNovels, addSources,
                     deleteDuplicate, deleteUnordered, siteMap, replace_images)
 from wuxiaworld.novels.views.review_views import ReviewSerializerView

@@ -200,12 +200,12 @@ class HomeNovelSerializer(serializers.ModelSerializer):
     views = serializers.CharField(source = "human_views")
     chapters = serializers.CharField(source = "chapter_count")
     image = serializers.ImageField(use_url=True, source = "new_image")
-    imageThumb = serializers.ImageField(use_url=True, source = "new_image_thumb")
+    # imageThumb = serializers.ImageField(use_url=True, source = "new_image_thumb")
 
     class Meta:
         model = Novel
-        fields = ('name', 'image','slug','description', "rating", "ranking", "views", "chapters",
-        "imageThumb")
+        fields = ('name', 'image','slug',"rating", "ranking", "views", "chapters",
+        )
     
 class HomeSerializer(serializers.ModelSerializer):
     # views_count = serializers.CharField()
@@ -280,3 +280,8 @@ class TagListSerializer(serializers.ModelSerializer):
         novels = Novel.objects.filter(tag = obj).order_by("-views__views")[:4]
         return HomeNovelSerializer(novels, many = True,
                 context={'request': self.context['request']}).data
+
+class AllNovelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Novel
+        fields = ("slug",)
