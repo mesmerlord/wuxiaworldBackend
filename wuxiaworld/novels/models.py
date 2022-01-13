@@ -181,7 +181,7 @@ class Bookmark(BaseModel):
         return self.novel.name
 
 class Settings(BaseModel):
-    fontSize = models.IntegerField(default = 16)
+    fontSize = models.IntegerField(default = 20)
     autoBookMark = models.BooleanField(default = False)
     lowData = models.BooleanField(default = False)
     darkMode = models.BooleanField(default = False)
