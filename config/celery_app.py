@@ -36,6 +36,6 @@ app.conf.beat_schedule = {
     },
     'increment_views': {
         'task': 'wuxiaworld.novels.tasks.add_views',
-        'schedule': 10.0,
+        'schedule': 60*5,
     }
 }
