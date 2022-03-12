@@ -8,6 +8,7 @@ from django.http import Http404
 from rest_framework_extensions.cache.decorators import (
     cache_response
 )
+from django.core.cache import cache
 
 class SingleChapterSerializerView(viewsets.ModelViewSet):
     permission_classes = [ReadOnly]
@@ -15,11 +16,26 @@ class SingleChapterSerializerView(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk = None):
         obj = get_object_or_404(self.queryset,novSlugChapSlug = pk)
-        novParent = obj.novelParent
-        novelViewParent = NovelViews.objects.get(viewsNovelName = novParent.slug)
-        novelViewParent.updateViews()
         serializer = ChapterSerializer(obj)
+        novelParentName = serializer.data['novelParent']
+        novParent = obj.novelParent
+        view = cache.get('views')
+
+        if view:
+            if novelParentName in view.keys():
+                views = {
+                    serializer.data['novelParent']: view[novelParentName] + 1}
+        
+        else:
+            views = {
+                novelParentName: 1}
+            view = {}
+        view.update(views)
+        cache.set("views", view, timeout=25)
+        # novelViewParent = NovelViews.objects.get(viewsNovelName = novParent.slug)
+        # novelViewParent.updateViews()
         if request.user.is_authenticated:
+
             try:
                 userSettings = Settings.objects.get(profile__user=self.request.user)
                 if userSettings.autoBookMark:

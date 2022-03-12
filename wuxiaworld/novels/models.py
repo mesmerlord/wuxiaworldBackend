@@ -82,12 +82,12 @@ class NovelViews(BaseModel):
     
     #Todo , this can cause deadlock/race condition later. Fix it using update function
     # instead
-    def updateViews(self):
+    def updateViews(self, increment_num = 1):
         obj = NovelViews.objects.filter(viewsNovelName = self.viewsNovelName)
-        obj.update(views = F('views')+1 ,
-                    weeklyViews = F('weeklyViews')+1,
-                    monthlyViews = F('monthlyViews')+1 ,
-                    yearlyViews = F('yearlyViews')+1)
+        obj.update(views = F('views')+increment_num ,
+                    weeklyViews = F('weeklyViews')+increment_num,
+                    monthlyViews = F('monthlyViews')+increment_num ,
+                    yearlyViews = F('yearlyViews')+increment_num)
         
 class Novel(BaseModel):
     name = models.CharField(max_length = 200)
@@ -182,7 +182,7 @@ class Bookmark(BaseModel):
 
 class Settings(BaseModel):
     fontSize = models.IntegerField(default = 20)
-    autoBookMark = models.BooleanField(default = False)
+    autoBookMark = models.BooleanField(default = True)
     lowData = models.BooleanField(default = False)
     darkMode = models.BooleanField(default = False)
 

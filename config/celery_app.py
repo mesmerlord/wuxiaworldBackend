@@ -33,5 +33,9 @@ app.conf.beat_schedule = {
     'filter_chapter_text': {
         'task': 'wuxiaworld.scraper.tasks.filter_blacklist_patterns',
         'schedule': crontab(hour=0, minute=0),
+    },
+    'increment_views': {
+        'task': 'wuxiaworld.novels.tasks.add_views',
+        'schedule': 10.0,
     }
 }

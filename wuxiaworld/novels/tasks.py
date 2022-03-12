@@ -16,6 +16,7 @@ from django.core.files.temp import NamedTemporaryFile
 from urllib.request import urlretrieve
 from PIL import Image
 from django.core.files import File 
+from django.core.cache import cache
 
 # logger = logging.getLogger("sentry_sdk")
 
@@ -96,8 +97,17 @@ def add_sources():
             new_source, _ = Source.objects.get_or_create(url = source[1],
             source_novel = queriedNovel ,defaults = {'disabled' : disabled,
             'base_url':base_url})
+
+@shared_task
+def add_views():
+    NovelViews = apps.get_model('novels', 'NovelViews')
+    views = cache.get('views')
     
-        
+    for name, viewNum in views.items():
+        novel = NovelViews.objects.get(viewsNovelName = name)
+        novel.updateViews(increment_num = viewNum)
+    cache.delete_pattern("views")
+  
 #Reset Views
 @shared_task
 def reset_weekly_views():
