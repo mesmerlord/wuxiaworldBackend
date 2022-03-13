@@ -102,7 +102,8 @@ def add_sources():
 def add_views():
     NovelViews = apps.get_model('novels', 'NovelViews')
     views = cache.get('views')
-    
+    if not views:
+        return
     for name, viewNum in views.items():
         novel = NovelViews.objects.get(viewsNovelName = name)
         novel.updateViews(increment_num = viewNum)

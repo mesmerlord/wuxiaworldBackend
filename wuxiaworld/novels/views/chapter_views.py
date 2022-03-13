@@ -20,7 +20,7 @@ class SingleChapterSerializerView(viewsets.ModelViewSet):
         novelParentName = serializer.data['novelParent']
         novParent = obj.novelParent
         view = cache.get('views')
-
+        views = {}
         if view:
             if novelParentName in view.keys():
                 views = {
