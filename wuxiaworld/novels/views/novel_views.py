@@ -60,7 +60,8 @@ class GetAllNovelSerializerView(viewsets.ModelViewSet):
     queryset = Novel.objects.annotate(num_of_chaps = Count("chapter"))
     serializer_class = NovelSerializer
     pagination_class = None
-
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = NovelParamsFilter
     def get_serializer_class(self):
         if self.action == "list":
             return AllNovelSerializer
