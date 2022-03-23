@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (Announcement, Novel,Author,Category,Chapter,NovelViews, 
-                    Tag, Profile, Bookmark, Settings, BlacklistPattern, Review)
+                    Tag, Profile, Bookmark, Settings, BlacklistPattern, Review, Report)
 
 def repeat_scrape_on(modeladmin, request, queryset):
     queryset.update(repeatScrape=True)
