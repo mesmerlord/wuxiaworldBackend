@@ -230,4 +230,4 @@ class Report(BaseModel):
     chapter = models.ForeignKey(Chapter, on_delete=models.CASCADE, null = True, blank = True)
 
     class Meta:
-        unique_together = ('reported_by', 'chapter',)
+        unique_together = ('reported_by', 'chapter', "description")

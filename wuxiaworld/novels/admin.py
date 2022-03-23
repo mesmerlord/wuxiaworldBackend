@@ -87,4 +87,8 @@ class BlacklistPatternAdmin(admin.ModelAdmin):
 @admin.register(Announcement)
 class AnnouncementAdmin(admin.ModelAdmin):
     list_display = ['title', "description", "authored_by"]
-    
+
+@admin.register(Report)
+class ReportAdmin(admin.ModelAdmin):
+    list_display = ['title', "description", "reported_by", "chapter"]
+    list_filter = ('title',)
