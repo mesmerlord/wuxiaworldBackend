@@ -27,7 +27,7 @@ class ChapterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chapter
         lookup_field = "novSlugChapSlug"
-        fields = ('index','title',"text", "nextChap","novelParent","novelParentName", "prevChap")
+        fields = ('index','title',"text", "nextChap","novelParent","novelParentName", "prevChap", "id")
     def get_next_chap(self,obj):
         nextChap = Chapter.objects.filter(novelParent = obj.novelParent, index__gt = obj.index )
         if nextChap:
@@ -240,7 +240,6 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 
 class ReportSerializer(serializers.ModelSerializer):
     checked = serializers.CharField(read_only = True)
-    chapter = serializers.CharField(source = "chapter.novSlugChapSlug")
     class Meta:
         model = Report
         fields = "__all__"
