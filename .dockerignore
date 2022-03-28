@@ -9,3 +9,5 @@
 .travis.yml
 venv
 novel_images/
+.git
+docs/
