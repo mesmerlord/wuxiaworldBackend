@@ -41,7 +41,7 @@ def add_chapter(chapter, queriedNovel):
         print(f"Characters deleted {newLen - prevLen} for {queriedNovel}")
         print(f'Chapter length {newLen}')
         
-    if len(chapterText):
+    if not len(chapterText):
         raise Exception(f"Chapter is empty for {queriedNovel}")
     try:
         obj, chapter = Chapter.objects.get_or_create(index = chapter['chapter']['id'],
