@@ -43,11 +43,16 @@ def add_chapter(chapter, queriedNovel):
         
     if len(chapterText):
         raise Exception(f"Chapter is empty for {queriedNovel}")
-    _, chapter = Chapter.objects.get_or_create(index = chapter['chapter']['id'],
-                novelParent = queriedNovel, defaults={
-                'text':chapterText,'title':chapter['chapter']['title'],
-                'scrapeLink':chapter['chapter']['url']
-            })
+    try:
+        obj, chapter = Chapter.objects.get_or_create(index = chapter['chapter']['id'],
+                    novelParent = queriedNovel, defaults={
+                    'text':chapterText,'title':chapter['chapter']['title'],
+                    'scrapeLink':chapter['chapter']['url']
+                })
+        if obj:
+            print(f"Chapter {obj.title} created")
+    except Exception as e:
+        print(traceback.format_exc())
 
 def perform_scrape(scrapeLink, queriedNovel):
     downloaded_chapters = []
