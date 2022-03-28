@@ -90,7 +90,7 @@ def perform_scrape(scrapeLink, queriedNovel):
             urllib3.exceptions.MaxRetryError, requests.exceptions.ConnectionError,
             urllib3.exceptions.NewConnectionError, requests.exceptions.MissingSchema,
             AttributeError,requests.exceptions.ReadTimeout ):
-            
+            print(traceback.format_exc())
             pass
     if scraper:
         scraper.destroy()
