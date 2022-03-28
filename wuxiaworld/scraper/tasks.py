@@ -39,6 +39,7 @@ def add_chapter(chapter, queriedNovel):
         chapterText = re.sub(pattern, replacement,chapterText )
         newLen = len(chapterText)
         print(f"Characters deleted {newLen - prevLen} for {queriedNovel}")
+        print(f'Chapter length {newLen}')
         
     if len(chapterText):
         raise Exception(f"Chapter is empty for {queriedNovel}")
