@@ -35,9 +35,13 @@ def add_chapter(chapter, queriedNovel):
     for pat in patternsWithReplacement:
         pattern = fr'{pat.pattern}'
         replacement = fr"{pat.replacement}"
+        prevLen = len(chapterText)
         chapterText = re.sub(pattern, replacement,chapterText )
+        newLen = len(chapterText)
+        print(f"Characters deleted {newLen - prevLen} for {queriedNovel}")
         
-
+    if len(chapterText):
+        raise Exception(f"Chapter is empty for {queriedNovel}")
     _, chapter = Chapter.objects.get_or_create(index = chapter['chapter']['id'],
                 novelParent = queriedNovel, defaults={
                 'text':chapterText,'title':chapter['chapter']['title'],
@@ -62,7 +66,6 @@ def perform_scrape(scrapeLink, queriedNovel):
         if int(x['id']) < index:
             continue
         else:
-            print("should be working")
             toScrape[scraper.executor.submit(scraper.download_chapter_body, x)] = {'id':x['id'],
              'title':x['title'], 'url':x['url']}
     
@@ -81,6 +84,7 @@ def perform_scrape(scrapeLink, queriedNovel):
             urllib3.exceptions.MaxRetryError, requests.exceptions.ConnectionError,
             urllib3.exceptions.NewConnectionError, requests.exceptions.MissingSchema,
             AttributeError,requests.exceptions.ReadTimeout ):
+            
             pass
     if scraper:
         scraper.destroy()
