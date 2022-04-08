@@ -31,7 +31,7 @@ certificatesResolvers:
 http:
   routers:
     web-secure-router:
-      rule: "Host(`wuxianovels.co`) || Host(`www.wuxianovels.co`)"
+      rule: "Host(`wuxia.click`) || Host(`www.wuxia.click`)"
       entryPoints:
         - web-secure
       middlewares:

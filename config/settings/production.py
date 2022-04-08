@@ -18,10 +18,12 @@ SECRET_KEY = env("DJANGO_SECRET_KEY")
 ALLOWED_HOSTS = ["wuxianovels.co",'wuxiaworld.eu','piratenovel.com',
                 "https://wuxianovels.co",'https://wuxiaworld.eu','https://piratenovel.com',
                 "www.wuxianovels.co",'www.wuxiaworld.eu','www.piratenovel.com',
-                "https://www.wuxianovels.co",'https://www.wuxiaworld.eu','https://www.piratenovel.com',]
+                "https://www.wuxianovels.co",'https://www.wuxiaworld.eu','https://www.piratenovel.com',
+                "wuxia.click", "www.wuxia.click", "https://www.wuxia.click"]
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOWED_ORIGINS  = (
                 "https://www.wuxianovels.co",'https://www.wuxiaworld.eu','https://www.piratenovel.com',
+                "wuxia.click", "www.wuxia.click", "https://www.wuxia.click"
                 )
 
 # DATABASES
