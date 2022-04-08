@@ -154,6 +154,13 @@ LOGGING = {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s "
             "%(process)d %(thread)d %(message)s"
+        },
+        'verbose1': {
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt' : "%d/%b/%Y %H:%M:%S"
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
         }
     },
     "handlers": {
@@ -161,7 +168,13 @@ LOGGING = {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
-        }
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'mysite.log',
+            'formatter': 'verbose1'
+        },
     },
     "root": {"level": "INFO", "handlers": ["console"]},
     "loggers": {
@@ -169,6 +182,15 @@ LOGGING = {
             "level": "ERROR",
             "handlers": ["console"],
             "propagate": False,
+        },
+        'django': {
+            'handlers':['file'],
+            'propagate': True,
+            'level':'DEBUG',
+        },
+        'wuxiaworld.novels': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
         },
         # Errors logged by the SDK itself
         "sentry_sdk": {"level": "ERROR", "handlers": ["console"], "propagate": False},
