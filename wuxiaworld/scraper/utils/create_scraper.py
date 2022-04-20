@@ -16,6 +16,7 @@ def init_crawler(novel_url) -> Crawler:
         raise Exception('No crawler found for ' + base_url)
 
     crawler = CrawlerType()
+    crawler.initialize()
     crawler.home_url = base_url
     crawler.novel_url = novel_url
     return crawler
